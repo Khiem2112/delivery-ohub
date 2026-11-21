@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_inherit_delivery_ohub" model="ir.ui.view">
+        <field name="name">res.partner.form.delivery.ohub</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state_id']" position="after">
+                <field name="country_code" invisible="1"/>
+                <field name="ward_id" 
+                       placeholder="Ward / Commune" 
+                       class="o_address_city" 
+                       options="{'no_open': True, 'no_create': True}"
+                       invisible="country_code != 'VN'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

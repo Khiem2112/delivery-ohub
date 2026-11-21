@@ -1,0 +1,14 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_res_admin_unit_user,res.admin.unit.user,model_res_admin_unit,base.group_user,1,0,0,0
+access_res_admin_unit_manager,res.admin.unit.manager,model_res_admin_unit,base.group_system,1,1,1,1
+access_delivery_address_mapping_user,delivery.address.mapping.user,model_delivery_address_mapping,base.group_user,1,1,1,0
+access_delivery_address_mapping_manager,delivery.address.mapping.manager,model_delivery_address_mapping,base.group_system,1,1,1,1
+access_delivery_ohub_operation_user,delivery.ohub.operation.user,model_delivery_ohub_operation,base.group_user,1,0,0,0
+access_delivery_ohub_operation_manager,delivery.ohub.operation.manager,model_delivery_ohub_operation,base.group_system,1,1,1,1
+access_delivery_shipping_order_user,delivery.shipping.order.user,model_delivery_shipping_order,base.group_user,1,1,1,1
+access_delivery_shipping_order_manager,delivery.shipping.order.manager,model_delivery_shipping_order,base.group_system,1,1,1,1
+access_delivery_shipping_order_log_user,delivery.shipping.order.log.user,model_delivery_shipping_order_log,base.group_user,1,1,1,0
+access_delivery_shipping_order_log_manager,delivery.shipping.order.log.manager,model_delivery_shipping_order_log,base.group_system,1,1,1,1
+access_delivery_fee_quote_user,delivery.fee.quote.user,model_delivery_fee_quote,base.group_user,1,1,1,1
+access_delivery_fee_quote_manager,delivery.fee.quote.manager,model_delivery_fee_quote,base.group_system,1,1,1,1
+

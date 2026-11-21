@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_res_admin_unit_tree" model="ir.ui.view">
+        <field name="name">res.admin.unit.list</field>
+        <field name="model">res.admin.unit</field>
+        <field name="arch" type="xml">
+            <list string="Administrative Units">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="level"/>
+                <field name="state_id"/>
+                <field name="parent_id"/>
+                <field name="country_id"/>
+                <field name="mapping_count" optional="show" string="Carrier Mappings"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_res_admin_unit_form" model="ir.ui.view">
+        <field name="name">res.admin.unit.form</field>
+        <field name="model">res.admin.unit</field>
+        <field name="arch" type="xml">
+            <form string="Administrative Unit">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_address_mappings"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-truck"
+                                invisible="level != '3'">
+                            <field name="mapping_count" widget="statinfo" string="Carrier Mappings"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="General Information">
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="level"/>
+                            <field name="country_id"/>
+                        </group>
+                        <group string="Hierarchy">
+                            <field name="state_id" options="{'no_open': True, 'no_create': True}"/>
+                            <field name="parent_id" invisible="level == '1'"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Subordinate Units" name="children" invisible="level != '1'">
+                            <field name="child_ids">
+                                <list editable="bottom">
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="level"/>
+                                    <field name="active"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Carrier Mappings" name="carrier_mappings" invisible="level != '3'">
+                            <field name="mapping_ids" context="{'default_oris_ward_id': id, 'default_state_id': state_id}">
+                                <list editable="bottom">
+                                    <field name="carrier_id"/>
+                                    <field name="hub_flow_id" optional="hide"/>
+                                    <field name="external_ward_code"/>
+                                    <field name="external_ward_name"/>
+                                    <field name="external_district_id" optional="show"/>
+                                    <field name="external_district_name" optional="show"/>
+                                    <field name="match_method"/>
+                                    <field name="is_default"/>
+                                    <field name="state" widget="badge" decoration-success="state == 'matched'" decoration-danger="state == 'unmatched'"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_res_admin_unit_search" model="ir.ui.view">
+        <field name="name">res.admin.unit.search</field>
+        <field name="model">res.admin.unit</field>
+        <field name="arch" type="xml">
+            <search string="Search Administrative Units">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="state_id"/>
+                <field name="parent_id"/>
+                <filter string="Level 1 - Province / City" name="filter_level_1" domain="[('level', '=', '1')]"/>
+                <filter string="Level 3 - Ward / Commune" name="filter_level_3" domain="[('level', '=', '3')]"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="State / Province" name="group_by_state" context="{'group_by': 'state_id'}"/>
+                    <filter string="Administrative Level" name="group_by_level" context="{'group_by': 'level'}"/>
+                    <filter string="Parent Unit" name="group_by_parent" context="{'group_by': 'parent_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_res_admin_unit" model="ir.actions.act_window">
+        <field name="name">Administrative Units</field>
+        <field name="res_model">res.admin.unit</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_level_3': 1}</field>
+    </record>
+</odoo>

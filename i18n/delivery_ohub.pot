@@ -1,0 +1,1068 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* delivery_ohub
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 04:30+0000\n"
+"PO-Revision-Date: 2026-11-13 04:30+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+
+#. module: delivery_ohub
+msgid "2-Level Administrative Division"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "A shipping order can only be cancelled while in 'Ready to Pick' status."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Active"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Actual Fee"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Address Mapping"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Address Mappings"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Administrative Level"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Administrative Unit"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Administrative Unit (ORIS)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Administrative Units"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Allow Inspection Without Trial"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Allow Trial"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Archived"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Are you sure you want to cancel this shipping order on the carrier system?"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Are you sure you want to request the carrier to return this package to the warehouse?"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Automatic"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Available Rate Quotes"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Available Service Package Quotes"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Available Services"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Background Queue (queue_job)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Base Fee"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Business Link"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Button Style"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "COD Amount"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "COD Fee"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Calculate Fee"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Cancel Shipping Order"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Cancelled"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Cargo Content"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Carrier Address Mappings"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Carrier District ID"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Carrier District Name"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Carrier Order Code"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Carrier Province ID"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Carrier Province Name"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Carrier Status"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Carrier Technical Codes (GHN / GHTK, etc.)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Carrier Ward Code"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Carrier Ward Name"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Carrier did not return a valid shipping order code."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Carrier updated status: <b>%(status)s</b>. Hub/Station: %(warehouse)s. Time: %(time)s. %(extra)s"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Cash on Delivery (COD)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Check Order Info"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Client Order Code"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Collecting Money on Delivery"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Collecting Money on Pick"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Contact Phone Number"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Converted Weight (g)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Could not obtain label print token from carrier."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Could not retrieve available service packages from carrier."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Could not retrieve shipping order details from carrier."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Country"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Create Shipping Order"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Currency"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Custom Operation"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Damaged"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Danger"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Declared Value"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Default Pickup Warehouse & Address"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Default Shipping Warehouse"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Default on Duplicate Route"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Delivered"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Delivering"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Delivery Exception"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Delivery Failed"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Delivery Method"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Delivery Note"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Delivery Note Type"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Delivery Order"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Delivery method '%(carrier)s' has no configured operation: %(op_type)s."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Description: %s"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Detailed Reason"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Detailed Shipping Fee Quote"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Dimensions (L x W x H)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "District"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "District ID"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Do Not Allow Inspection"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Documents & Shipping Charges"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Draft"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Each shipping event UID must be unique per shipping order."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Enter order code if already exists..."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Error calculating shipping fee from carrier"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Estimated Initial Fee"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Estimated Total Fee"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Event Description"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Event Source"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Event Time"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Event Type"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Event UID"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Exception"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Execution Configuration"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Execution Mode"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Expected Delivery Date"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Flow & Carrier Account"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "General Information"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Get Carrier Rates"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Get Order Details"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Group By"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Height (cm)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Hierarchy"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Hub Request (hub.request)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "In Transit"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Insurance Fee"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Integration Operations"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Integration Operations (API Requests)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Internal Reference"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Internal Shipping Order Code"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Internal State"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Issues / Returns"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Last Event Time"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Last Synchronized Date"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Latest Shipping Status"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Length (cm)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Level 1 - Province / City"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Level 3 - Ward / Commune"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Linked Shipping Orders"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Log Count"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Lookup Order Code"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Lost"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Manual"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Manual Sync"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Mapping Description"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Matched"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Matching Method"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Missing State/Province or Ward/Commune to resolve shipping address."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "New"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "New Mapping"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Not Checked"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "ORIS - Carrier Address Mapping"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "ORIS - Carrier Address Mappings"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "ORIS Administrative Units"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Operation Name"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Operation Type"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Order Creation"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Order Info Check: Order code '%s' ALREADY EXISTS on carrier system."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Order Info Check: Order code '%s' DOES NOT EXIST on carrier system (Valid for creating order)."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Order Pre-check & Info"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Order Pre-check Status"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Order already exists on carrier"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Order information is not valid according to carrier regulations."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Outdated Rate Quote"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Package Weight (g)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Package and delivery address information is valid with carrier."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Packaging & Cash on Delivery"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Packaging Specification"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Parent Unit"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Partner address for '%(partner_name)s' is missing required fields: %(fields)s."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Payment Type"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Picked"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Picking"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Please select an 'oHUB Integration' delivery method before fetching fee quotes."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Please select an 'oHUB Integration' delivery method."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Primary"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Print Label"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Prioritize using this mapping if a ward corresponds to multiple carrier codes."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Processing Hub / Station"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Province / City"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Raw Payload (JSON)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Ready to Pick"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Ready to Ship"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Reason Code"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Reason: %s"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Recipient / Customer"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Recipient Address"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Recipient Name"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Recipient Pays"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Recipient Phone"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Redeliver Order"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Reference"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Request Redelivery"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Request Return"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Return"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Return Failed"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Return Order"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Return Sorting"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Return Transporting"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Returned"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Returning"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sales Order"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Scheduled Cron"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Scrapped"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Search Address Mappings"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Search Administrative Units"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Search Shipping Orders"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Secondary"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Select Quote"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Selected"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sender / Shop Pays"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sender Contact Address"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sender Detailed Address"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sender Phone"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sender State / Province"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sender Ward / Commune"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sequence"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Service ID (service_id)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Service Package"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Service Type ID (service_type_id)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Shipping Order"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Shipping Order Count"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Shipping Order Event Log"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Shipping Order via oHUB"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Shipping Orders"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Shipping fee quote is outdated due to changes in cargo or delivery address. Please click <b>Get Carrier Rates</b> to recalculate before shipping."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Shipping order %(order_code)s encountered an exception: %(status)s. Reason: %(reason)s"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Shipping order <b>%(order_code)s</b> status updated: <b>%(status)s</b>.<br/>Hub/Station: %(warehouse)s.<br/>%(extra)s"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Shipping order issue: %s"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Shipping warehouse for delivery method '%(carrier)s' is missing State/Province or Ward/Commune."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Shop ID provided by carrier (e.g. GHN ShopId)."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Show Button on Sales Order"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sort Code"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sorting"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Specific notes for shipper / courier..."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Standard"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "State / Province"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Status"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Store / Warehouse ID (Shop ID)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Storing in Hub"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Street Address"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Subordinate Units"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Successfully created shipping order on carrier. Carrier Code: %s"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Successfully sent cancellation request to carrier."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Successfully sent redelivery request to carrier."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Successfully sent return request to carrier."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sync"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sync Tracking"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Sync from Carrier"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Synchronous"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "The address '%(ward)s, %(state)s' has not been mapped for delivery method '%(carrier)s'."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "The administrative unit code must be unique per level and country."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "The sales order already has an active shipping order: %s. Cannot create duplicate shipping order."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "The sales order must be in 'Sales Order' state to create a shipping order."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "The shipping order does not have a carrier tracking code to print label."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "The shipping order does not have a carrier tracking code to query."
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Total Fee"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Tracking & Timestamps"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Tracking Logs"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Tracking Logs & Webhooks"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Transporting"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Unit Code"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Unit Name"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Unknown"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Unmatched"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Update COD Amount"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Updated latest information from carrier. Status: %s"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Valid (Not found on carrier)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Validate (Preview)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Validate / Preview Order"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Validation Successful"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Waiting to Return"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Ward / Commune"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Ward / Commune Code"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Warning"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Webhook Push"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Weight (g)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "Width (cm)"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "oHUB / GHN Delivery"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "oHUB Delivery"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "oHUB Delivery Integration Operation"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "oHUB Integration"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "oHUB Integration Flow"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "oHUB Integration Operation"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "oHUB Integration Operations"
+msgstr ""
+
+#. module: delivery_ohub
+msgid "oHUB Operations"
+msgstr ""

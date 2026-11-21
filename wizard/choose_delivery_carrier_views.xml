@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="choose_delivery_carrier_view_form_inherit_delivery_ohub" model="ir.ui.view">
+        <field name="name">choose.delivery.carrier.form.inherit.delivery.ohub</field>
+        <field name="model">choose.delivery.carrier</field>
+        <field name="inherit_id" ref="delivery.choose_delivery_carrier_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_id']" position="after">
+                <field name="picking_id" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//group[1]" position="after">
+                <field name="is_ohub" invisible="1"/>
+                <field name="selected_quote_id" invisible="1"/>
+                <group string="oHUB Shipping Options" invisible="not is_ohub">
+                    <group>
+                        <field name="service_type"/>
+                        <field name="payment_type_id"/>
+                        <field name="cod_failed_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    </group>
+                    <group>
+                        <label for="package_length" string="Package Dimensions (L x W x H)"/>
+                        <div class="o_row">
+                            <field name="package_length" class="oe_inline"/> x
+                            <field name="package_width" class="oe_inline"/> x
+                            <field name="package_height" class="oe_inline"/> cm
+                        </div>
+                        <div class="mt-2">
+                            <button name="action_fetch_services_wizard"
+                                    type="object"
+                                    string="Fetch Services"
+                                    class="btn btn-secondary btn-sm"/>
+                        </div>
+                    </group>
+                </group>
+                <div role="alert" class="alert alert-danger mb-2" invisible="not is_ohub or not delivery_message">
+                    <field name="delivery_message" nolabel="1"/>
+                </div>
+                <group string="Available Service Package Quotes" invisible="not is_ohub or not fee_quote_ids">
+                    <field name="fee_quote_ids" nolabel="1">
+                        <list editable="bottom" create="0" delete="0" decoration-warning="is_outdated" decoration-danger="error_message">
+                            <field name="carrier_id" column_invisible="True" force_save="1"/>
+                            <field name="wizard_id" column_invisible="True" force_save="1"/>
+                            <field name="is_selected" widget="boolean_toggle" string="Select"/>
+                            <field name="service_id" string="Service ID" optional="show" readonly="1" force_save="1"/>
+                            <field name="service_code" string="Service Code" optional="show" readonly="1" force_save="1"/>
+                            <field name="service_name" string="Service Package" readonly="1" force_save="1"/>
+                            <field name="service_type" string="Service Type" readonly="1" force_save="1"/>
+                            <field name="service_fee" widget="monetary" string="Base Fee" readonly="1" force_save="1"/>
+                            <field name="insurance_fee" widget="monetary" string="Insurance Fee" optional="hide" readonly="1" force_save="1"/>
+                            <field name="cod_fee" widget="monetary" string="COD Fee" optional="hide" readonly="1" force_save="1"/>
+                            <field name="total_fee" widget="monetary" string="Total Fee" class="fw-bold" readonly="1" force_save="1"/>
+                            <field name="carrier_currency_id" column_invisible="True" force_save="1"/>
+                            <field name="carrier_total_fee" widget="monetary" options="{'currency_field': 'carrier_currency_id'}" string="Original Fee" optional="show" readonly="1" force_save="1"/>
+                            <field name="currency_id" column_invisible="True" force_save="1"/>
+                            <field name="error_message" string="Carrier Note / Error" decoration-danger="error_message" optional="show" readonly="1" force_save="1"/>
+                            <field name="is_outdated" widget="badge" decoration-danger="error_message or is_outdated" decoration-success="not is_outdated and not error_message and total_fee > 0" string="Status" readonly="1" force_save="1"/>
+                            <button name="action_calculate_fee"
+                                    string="Calculate Fee"
+                                    type="object"
+                                    class="btn-secondary btn-sm"/>
+                        </list>
+                    </field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

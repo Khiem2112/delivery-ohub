@@ -1,0 +1,49 @@
+# Bytecode va cache cua Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Bao cao, dac ta, tai lieu nghiep vu va quan ly tac vu
+*.md
+!README.md
+*.txt
+*.docx
+*.pdf
+task/
+tasks/
+docs/
+notes/
+scratch/
+
+# Cau hinh moi truong phat trien va trinh soan thao
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Tep he dieu hanh va tep tam
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+desktop.ini
+*.tmp
+*.bak
+*.orig
+
+# Nhat ky va bien moi truong
+*.log
+*.dump
+.env
+.env.*

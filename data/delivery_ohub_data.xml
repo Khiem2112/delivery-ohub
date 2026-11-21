@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="seq_delivery_shipping_order" model="ir.sequence">
+            <field name="name">Internal Shipping Order Code</field>
+            <field name="code">delivery.shipping.order</field>
+            <field name="prefix">SHIP/%(range_year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Sample administrative unit data (Ward / Commune) linked to Odoo standard State / Province -->
+        <record id="admin_unit_hcm_vo_thi_sau" model="res.admin.unit">
+            <field name="name">Phường Võ Thị Sáu</field>
+            <field name="code">20308</field>
+            <field name="level">3</field>
+            <field name="state_id" ref="base.state_vn_VN-SG"/>
+            <field name="country_id" ref="base.vn"/>
+        </record>
+
+        <record id="admin_unit_hcm_ben_nghe" model="res.admin.unit">
+            <field name="name">Phường Bến Nghé</field>
+            <field name="code">20101</field>
+            <field name="level">3</field>
+            <field name="state_id" ref="base.state_vn_VN-SG"/>
+            <field name="country_id" ref="base.vn"/>
+        </record>
+
+        <record id="admin_unit_hcm_tan_thuan_tay" model="res.admin.unit">
+            <field name="name">Phường Tân Thuận Tây</field>
+            <field name="code">20710</field>
+            <field name="level">3</field>
+            <field name="state_id" ref="base.state_vn_VN-SG"/>
+            <field name="country_id" ref="base.vn"/>
+        </record>
+
+        <record id="admin_unit_hp_xuan_dam" model="res.admin.unit">
+            <field name="name">Xã Xuân Đám</field>
+            <field name="code">31312</field>
+            <field name="level">3</field>
+            <field name="state_id" ref="base.state_vn_VN-HP"/>
+            <field name="country_id" ref="base.vn"/>
+        </record>
+
+        <!-- Sample address mappings with GHN -->
+        <record id="mapping_hcm_vo_thi_sau_ghn" model="delivery.address.mapping">
+            <field name="state_id" ref="base.state_vn_VN-SG"/>
+            <field name="oris_ward_id" ref="admin_unit_hcm_vo_thi_sau"/>
+            <field name="external_province_id">202</field>
+            <field name="external_province_name">Hồ Chí Minh</field>
+            <field name="external_district_id">1444</field>
+            <field name="external_district_name">Quận 3</field>
+            <field name="external_ward_code">20308</field>
+            <field name="external_ward_name">Phường Võ Thị Sáu</field>
+            <field name="state">matched</field>
+            <field name="match_method">manual</field>
+            <field name="is_default">True</field>
+        </record>
+
+        <record id="mapping_hcm_ben_nghe_ghn" model="delivery.address.mapping">
+            <field name="state_id" ref="base.state_vn_VN-SG"/>
+            <field name="oris_ward_id" ref="admin_unit_hcm_ben_nghe"/>
+            <field name="external_province_id">202</field>
+            <field name="external_province_name">Hồ Chí Minh</field>
+            <field name="external_district_id">1442</field>
+            <field name="external_district_name">Quận 1</field>
+            <field name="external_ward_code">20101</field>
+            <field name="external_ward_name">Phường Bến Nghé</field>
+            <field name="state">matched</field>
+            <field name="match_method">manual</field>
+            <field name="is_default">True</field>
+        </record>
+
+        <record id="mapping_hcm_tan_thuan_tay_ghn" model="delivery.address.mapping">
+            <field name="state_id" ref="base.state_vn_VN-SG"/>
+            <field name="oris_ward_id" ref="admin_unit_hcm_tan_thuan_tay"/>
+            <field name="external_province_id">202</field>
+            <field name="external_province_name">Hồ Chí Minh</field>
+            <field name="external_district_id">1449</field>
+            <field name="external_district_name">Quận 7</field>
+            <field name="external_ward_code">20710</field>
+            <field name="external_ward_name">Phường Tân Thuận Tây</field>
+            <field name="state">matched</field>
+            <field name="match_method">manual</field>
+            <field name="is_default">True</field>
+        </record>
+    </data>
+</odoo>

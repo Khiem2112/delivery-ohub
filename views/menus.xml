@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Shipping Orders Menu in Inventory -->
+    <menuitem id="menu_delivery_shipping_order_stock"
+              name="Shipping Orders"
+              parent="stock.menu_stock_warehouse_mgmt"
+              action="action_delivery_shipping_order"
+              sequence="50"/>
+
+    <!-- Shipping Orders Menu in Sales -->
+    <menuitem id="menu_delivery_shipping_order_sale"
+              name="Shipping Orders"
+              parent="sale.sale_order_menu"
+              action="action_delivery_shipping_order"
+              sequence="35"/>
+
+    <!-- oHUB Delivery Configuration Group in Inventory -->
+    <menuitem id="menu_delivery_ohub_root_config"
+              name="oHUB Delivery"
+              parent="stock.menu_stock_config_settings"
+              sequence="25"/>
+
+    <menuitem id="menu_delivery_ohub_operation_config"
+              name="oHUB Operations"
+              parent="menu_delivery_ohub_root_config"
+              action="action_delivery_ohub_operation"
+              sequence="10"/>
+
+    <menuitem id="menu_delivery_address_mapping_config"
+              name="Carrier Address Mappings"
+              parent="menu_delivery_ohub_root_config"
+              action="action_delivery_address_mapping"
+              sequence="20"/>
+
+    <menuitem id="menu_res_admin_unit_config"
+              name="ORIS Administrative Units"
+              parent="menu_delivery_ohub_root_config"
+              action="action_res_admin_unit"
+              sequence="30"/>
+
+    <!-- Address Mapping Menu in Sales Configuration -->
+    <menuitem id="menu_delivery_address_mapping_sale_config"
+              name="Carrier Address Mappings"
+              parent="sale.menu_sale_config"
+              action="action_delivery_address_mapping"
+              sequence="55"/>
+</odoo>

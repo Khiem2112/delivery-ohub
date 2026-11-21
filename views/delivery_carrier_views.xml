@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_delivery_carrier_form_inherit_delivery_ohub" model="ir.ui.view">
+        <field name="name">delivery.carrier.form.delivery.ohub</field>
+        <field name="model">delivery.carrier</field>
+        <field name="inherit_id" ref="delivery.view_delivery_carrier_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_address_mappings"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-map-marker"
+                        invisible="delivery_type != 'ohub'">
+                    <field name="address_mapping_count" widget="statinfo" string="Address Mappings"/>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='currency_id']" position="attributes">
+                <attribute name="invisible">0</attribute>
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+             <xpath expr="//field[@name='tracking_url']" position="attributes">
+                <attribute name="invisible">delivery_type not in ('fixed', 'base_on_rule', 'ohub')</attribute>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page name="ohub_config" string="oHUB Integration" invisible="delivery_type != 'ohub'">
+                    <group>
+                        <group string="Flow &amp; Carrier Account">
+                            <field name="hub_flow_id" required="delivery_type == 'ohub'"/>
+                            <field name="auto_create_shipping_on_validate"/>
+                        </group>
+                        <group string="Default Pickup Warehouse &amp; Address">
+                            <field name="sender_warehouse_id"/>
+                            <field name="sender_partner_id"/>
+                            <field name="sender_phone"/>
+                            <field name="sender_address"/>
+                            <field name="sender_state_id" options="{'no_open': True, 'no_create': True}"/>
+                            <field name="sender_ward_id" options="{'no_open': True, 'no_create': True}"/>
+                        </group>
+                    </group>
+                    <separator string="Integration Operations (API Requests)"/>
+                    <field name="operation_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="operation_type"/>
+                            <field name="name"/>
+                            <field name="request_id" domain="[('flow_id', '=', parent.hub_flow_id)]"/>
+                            <field name="execution_mode"/>
+                            <field name="button_style"/>
+                            <field name="show_on_sale_order"/>
+                            <field name="active"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

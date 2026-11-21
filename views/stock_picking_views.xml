@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_inherit_delivery_ohub" model="ir.ui.view">
+        <field name="name">stock.picking.form.inherit.delivery.ohub</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_open_delivery_wizard"
+                    string="Choose Delivery Carrier"
+                    type="object"
+                    class="btn-secondary"
+                    invisible="state == 'cancel' or has_active_shipping_order" />
+                <button name="action_create_shipping_order"
+                    string="Create Shipping Order"
+                    type="object"
+                    class="btn-secondary"
+                    invisible="state not in ['assigned', 'done'] or has_active_shipping_order"
+                    confirm="Are you sure to generate the shipping order and submit the details to the carrier now" />
+            </xpath>
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_shipping_orders"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-truck"
+                    invisible="shipping_order_count == 0">
+                    <field name="shipping_order_count" widget="statinfo" string="Shipping Orders" />
+                </button>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page name="ohub_shipping_tab" string="oHUB Shipping">
+                    <field name="has_active_shipping_order" invisible="1" />
+                    <group>
+                        <group string="Carrier and Service Configuration">
+                            <field name="carrier_id" options="{'no_create': True}"
+                                readonly="state == 'cancel' or has_active_shipping_order" />
+                            <field name="delivery_service_name" readonly="1" />
+                            <field name="delivery_service_code" readonly="1" />
+                            <field name="delivery_service_type" readonly="1" />
+                            <field name="delivery_service_id" invisible="1" />
+                            <field name="shipping_payment_type"
+                                readonly="state == 'cancel' or has_active_shipping_order" />
+                            <field name="cod_failed_amount" widget="monetary"
+                                readonly="state == 'cancel' or has_active_shipping_order" />
+                            <field name="goods_amount" widget="monetary" readonly="1" />
+                            <field name="shipping_fee_amount" widget="monetary" readonly="1" />
+                            <field name="company_currency_id" invisible="1" />
+                        </group>
+                        <group string="Package Dimensions">
+                            <label for="package_length" string="Dimensions (L x W x H)" />
+                            <div class="o_row">
+                                <field name="package_length" class="oe_inline"
+                                    readonly="state == 'cancel' or has_active_shipping_order" /> x <field
+                                    name="package_width" class="oe_inline"
+                                    readonly="state == 'cancel' or has_active_shipping_order" /> x <field
+                                    name="package_height" class="oe_inline"
+                                    readonly="state == 'cancel' or has_active_shipping_order" /> cm </div>
+                        </group>
+                    </group>
+
+                    <separator string="Linked Shipping Orders" />
+                    <field name="shipping_order_ids" nolabel="1" readonly="1">
+                        <list>
+                            <field name="order_code" />
+                            <field name="client_order_code" />
+                            <field name="to_name" />
+                            <field name="carrier_status" widget="badge" />
+                            <field name="internal_state" widget="badge" />
+                            <field name="cod_amount" widget="monetary" />
+                            <field name="actual_total_fee" widget="monetary" />
+                            <field name="expected_delivery_time" />
+                            <button name="action_sync_order_info"
+                                string="Sync"
+                                type="object"
+                                class="btn-secondary btn-sm" />
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

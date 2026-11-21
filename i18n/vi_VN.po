@@ -1,0 +1,1069 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* delivery_ohub
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 04:30+0000\n"
+"PO-Revision-Date: 2026-11-13 04:30+0000\n"
+"Last-Translator: \n"
+"Language-Team: Vietnamese (Vietnam)\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: delivery_ohub
+msgid "2-Level Administrative Division"
+msgstr "Địa chính 2 cấp"
+
+#. module: delivery_ohub
+msgid "A shipping order can only be cancelled while in 'Ready to Pick' status."
+msgstr "Chỉ có thể hủy vận đơn khi đang ở trạng thái 'Chờ lấy hàng' (ready_to_pick)."
+
+#. module: delivery_ohub
+msgid "Active"
+msgstr "Hoạt động"
+
+#. module: delivery_ohub
+msgid "Actual Fee"
+msgstr "Cước thực tế"
+
+#. module: delivery_ohub
+msgid "Address Mapping"
+msgstr "Ánh xạ địa chính"
+
+#. module: delivery_ohub
+msgid "Address Mappings"
+msgstr "Ánh xạ địa chính"
+
+#. module: delivery_ohub
+msgid "Administrative Level"
+msgstr "Cấp hành chính"
+
+#. module: delivery_ohub
+msgid "Administrative Unit"
+msgstr "Đơn vị hành chính"
+
+#. module: delivery_ohub
+msgid "Administrative Unit (ORIS)"
+msgstr "Đơn vị hành chính (ORIS)"
+
+#. module: delivery_ohub
+msgid "Administrative Units"
+msgstr "Đơn vị hành chính"
+
+#. module: delivery_ohub
+msgid "Allow Inspection Without Trial"
+msgstr "Cho xem hàng không cho thử"
+
+#. module: delivery_ohub
+msgid "Allow Trial"
+msgstr "Cho thử hàng"
+
+#. module: delivery_ohub
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: delivery_ohub
+msgid "Are you sure you want to cancel this shipping order on the carrier system?"
+msgstr "Bạn có chắc chắn muốn hủy vận đơn này trên hệ thống ĐVVC?"
+
+#. module: delivery_ohub
+msgid "Are you sure you want to request the carrier to return this package to the warehouse?"
+msgstr "Bạn có chắc chắn muốn yêu cầu ĐVVC chuyển hoàn kiện hàng về kho?"
+
+#. module: delivery_ohub
+msgid "Automatic"
+msgstr "Tự động"
+
+#. module: delivery_ohub
+msgid "Available Rate Quotes"
+msgstr "Bảng báo giá cước khả dụng"
+
+#. module: delivery_ohub
+msgid "Available Service Package Quotes"
+msgstr "Bảng báo giá các gói dịch vụ khả dụng"
+
+#. module: delivery_ohub
+msgid "Available Services"
+msgstr "Lấy danh mục dịch vụ (Available Services)"
+
+#. module: delivery_ohub
+msgid "Background Queue (queue_job)"
+msgstr "Hàng đợi nền (queue_job)"
+
+#. module: delivery_ohub
+msgid "Base Fee"
+msgstr "Cước chính"
+
+#. module: delivery_ohub
+msgid "Business Link"
+msgstr "Liên kết nghiệp vụ"
+
+#. module: delivery_ohub
+msgid "Button Style"
+msgstr "Kiểu nút bấm"
+
+#. module: delivery_ohub
+msgid "COD Amount"
+msgstr "Tiền thu hộ"
+
+#. module: delivery_ohub
+msgid "COD Fee"
+msgstr "Phí COD"
+
+#. module: delivery_ohub
+msgid "Calculate Fee"
+msgstr "Tính cước phí (Calculate Fee)"
+
+#. module: delivery_ohub
+msgid "Cancel Shipping Order"
+msgstr "Hủy vận đơn"
+
+#. module: delivery_ohub
+msgid "Cancelled"
+msgstr "Đã hủy"
+
+#. module: delivery_ohub
+msgid "Cargo Content"
+msgstr "Nội dung hàng hóa"
+
+#. module: delivery_ohub
+msgid "Carrier Address Mappings"
+msgstr "Ánh xạ địa chính ĐVVC"
+
+#. module: delivery_ohub
+msgid "Carrier District ID"
+msgstr "Mã Huyện ĐVVC (DistrictID)"
+
+#. module: delivery_ohub
+msgid "Carrier District Name"
+msgstr "Tên Huyện ĐVVC"
+
+#. module: delivery_ohub
+msgid "Carrier Order Code"
+msgstr "Mã vận đơn ĐVVC"
+
+#. module: delivery_ohub
+msgid "Carrier Province ID"
+msgstr "Mã Tỉnh ĐVVC (ProvinceID)"
+
+#. module: delivery_ohub
+msgid "Carrier Province Name"
+msgstr "Tên Tỉnh ĐVVC"
+
+#. module: delivery_ohub
+msgid "Carrier Status"
+msgstr "Trạng thái ĐVVC"
+
+#. module: delivery_ohub
+msgid "Carrier Technical Codes (GHN / GHTK, etc.)"
+msgstr "Mã kỹ thuật ĐVVC (GHN / GHTK...)"
+
+#. module: delivery_ohub
+msgid "Carrier Ward Code"
+msgstr "Mã Xã ĐVVC (WardCode)"
+
+#. module: delivery_ohub
+msgid "Carrier Ward Name"
+msgstr "Tên Xã ĐVVC"
+
+#. module: delivery_ohub
+msgid "Carrier did not return a valid shipping order code."
+msgstr "ĐVVC không trả về mã vận đơn hợp lệ."
+
+#. module: delivery_ohub
+msgid "Carrier updated status: <b>%(status)s</b>. Hub/Station: %(warehouse)s. Time: %(time)s. %(extra)s"
+msgstr "ĐVVC cập nhật trạng thái mới: <b>%(status)s</b>. Bưu cục: %(warehouse)s. Thời gian: %(time)s. %(extra)s"
+
+#. module: delivery_ohub
+msgid "Cash on Delivery (COD)"
+msgstr "Tiền thu hộ (COD)"
+
+#. module: delivery_ohub
+msgid "Check Order Info"
+msgstr "Kiểm tra Order Info"
+
+#. module: delivery_ohub
+msgid "Client Order Code"
+msgstr "Mã đơn đối tác (Client Code)"
+
+#. module: delivery_ohub
+msgid "Collecting Money on Delivery"
+msgstr "Thu tiền khi giao hàng (money_collect_delivering)"
+
+#. module: delivery_ohub
+msgid "Collecting Money on Pick"
+msgstr "Thu tiền khi lấy hàng (money_collect_picking)"
+
+#. module: delivery_ohub
+msgid "Contact Phone Number"
+msgstr "Số điện thoại liên hệ"
+
+#. module: delivery_ohub
+msgid "Converted Weight (g)"
+msgstr "Trọng lượng quy đổi (gram)"
+
+#. module: delivery_ohub
+msgid "Could not obtain label print token from carrier."
+msgstr "Không lấy được token in nhãn từ ĐVVC."
+
+#. module: delivery_ohub
+msgid "Could not retrieve available service packages from carrier."
+msgstr "Không lấy được danh sách gói dịch vụ khả dụng từ ĐVVC."
+
+#. module: delivery_ohub
+msgid "Could not retrieve shipping order details from carrier."
+msgstr "Không tìm thấy thông tin vận đơn từ ĐVVC."
+
+#. module: delivery_ohub
+msgid "Country"
+msgstr "Quốc gia"
+
+#. module: delivery_ohub
+msgid "Create Shipping Order"
+msgstr "Tạo vận đơn chính thức (Create Order)"
+
+#. module: delivery_ohub
+msgid "Currency"
+msgstr "Tiền tệ"
+
+#. module: delivery_ohub
+msgid "Custom Operation"
+msgstr "Tùy biến khác"
+
+#. module: delivery_ohub
+msgid "Damaged"
+msgstr "Hàng hư hỏng (damage)"
+
+#. module: delivery_ohub
+msgid "Danger"
+msgstr "Nguy hiểm (Danger)"
+
+#. module: delivery_ohub
+msgid "Declared Value"
+msgstr "Giá trị khai giá"
+
+#. module: delivery_ohub
+msgid "Default Pickup Warehouse & Address"
+msgstr "Kho & Điểm lấy hàng mặc định"
+
+#. module: delivery_ohub
+msgid "Default Shipping Warehouse"
+msgstr "Kho xuất hàng mặc định"
+
+#. module: delivery_ohub
+msgid "Default on Duplicate Route"
+msgstr "Mặc định khi trùng tuyến"
+
+#. module: delivery_ohub
+msgid "Delivered"
+msgstr "Giao hàng thành công (delivered)"
+
+#. module: delivery_ohub
+msgid "Delivering"
+msgstr "Đang phát hàng (delivering)"
+
+#. module: delivery_ohub
+msgid "Delivery Exception"
+msgstr "Sự cố giao hàng"
+
+#. module: delivery_ohub
+msgid "Delivery Failed"
+msgstr "Giao hàng không thành công (delivery_fail)"
+
+#. module: delivery_ohub
+msgid "Delivery Method"
+msgstr "Phương thức giao hàng"
+
+#. module: delivery_ohub
+msgid "Delivery Note"
+msgstr "Ghi chú giao hàng"
+
+#. module: delivery_ohub
+msgid "Delivery Note Type"
+msgstr "Lưu ý khi giao"
+
+#. module: delivery_ohub
+msgid "Delivery Order"
+msgstr "Phiếu xuất kho liên kết"
+
+#. module: delivery_ohub
+msgid "Delivery method '%(carrier)s' has no configured operation: %(op_type)s."
+msgstr "Phương thức giao hàng '%(carrier)s' chưa được cấu hình tác vụ: %(op_type)s."
+
+#. module: delivery_ohub
+msgid "Description: %s"
+msgstr "Mô tả: %s"
+
+#. module: delivery_ohub
+msgid "Detailed Reason"
+msgstr "Lý do chi tiết"
+
+#. module: delivery_ohub
+msgid "Detailed Shipping Fee Quote"
+msgstr "Báo giá cước vận chuyển chi tiết"
+
+#. module: delivery_ohub
+msgid "Dimensions (L x W x H)"
+msgstr "Kích thước (D x R x C)"
+
+#. module: delivery_ohub
+msgid "District"
+msgstr "Quận / Huyện"
+
+#. module: delivery_ohub
+msgid "District ID"
+msgstr "Mã Quận / Huyện"
+
+#. module: delivery_ohub
+msgid "Do Not Allow Inspection"
+msgstr "Không cho xem hàng"
+
+#. module: delivery_ohub
+msgid "Documents & Shipping Charges"
+msgstr "Chứng từ & Tài chính vận chuyển"
+
+#. module: delivery_ohub
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: delivery_ohub
+msgid "Each shipping event UID must be unique per shipping order."
+msgstr "Mỗi sự kiện vận đơn chỉ được ghi nhận một lần duy nhất."
+
+#. module: delivery_ohub
+msgid "Enter order code if already exists..."
+msgstr "Nhập mã vận đơn nếu có sẵn..."
+
+#. module: delivery_ohub
+msgid "Error calculating shipping fee from carrier"
+msgstr "Lỗi khi tính phí vận chuyển từ ĐVVC"
+
+#. module: delivery_ohub
+msgid "Estimated Initial Fee"
+msgstr "Cước dự kiến lúc tạo"
+
+#. module: delivery_ohub
+msgid "Estimated Total Fee"
+msgstr "Tổng cước dự kiến"
+
+#. module: delivery_ohub
+msgid "Event Description"
+msgstr "Mô tả sự kiện"
+
+#. module: delivery_ohub
+msgid "Event Source"
+msgstr "Nguồn sự kiện"
+
+#. module: delivery_ohub
+msgid "Event Time"
+msgstr "Thời gian sự kiện"
+
+#. module: delivery_ohub
+msgid "Event Type"
+msgstr "Loại sự kiện"
+
+#. module: delivery_ohub
+msgid "Event UID"
+msgstr "Định danh sự kiện"
+
+#. module: delivery_ohub
+msgid "Exception"
+msgstr "Hàng ngoại lệ (exception)"
+
+#. module: delivery_ohub
+msgid "Execution Configuration"
+msgstr "Cấu hình thực thi oHUB"
+
+#. module: delivery_ohub
+msgid "Execution Mode"
+msgstr "Phương thức thực thi"
+
+#. module: delivery_ohub
+msgid "Expected Delivery Date"
+msgstr "Thời gian giao dự kiến"
+
+#. module: delivery_ohub
+msgid "Flow & Carrier Account"
+msgstr "Luồng & Tài khoản ĐVVC"
+
+#. module: delivery_ohub
+msgid "General Information"
+msgstr "Thông tin chung"
+
+#. module: delivery_ohub
+msgid "Get Carrier Rates"
+msgstr "Lấy bảng phí ĐVVC"
+
+#. module: delivery_ohub
+msgid "Get Order Details"
+msgstr "Tra cứu chi tiết đơn (Get Order Info)"
+
+#. module: delivery_ohub
+msgid "Group By"
+msgstr "Gom nhóm theo"
+
+#. module: delivery_ohub
+msgid "Height (cm)"
+msgstr "Chiều cao (cm)"
+
+#. module: delivery_ohub
+msgid "Hierarchy"
+msgstr "Cấu trúc phân cấp"
+
+#. module: delivery_ohub
+msgid "Hub Request (hub.request)"
+msgstr "Yêu cầu Hub (hub.request)"
+
+#. module: delivery_ohub
+msgid "In Transit"
+msgstr "Đang vận chuyển"
+
+#. module: delivery_ohub
+msgid "Insurance Fee"
+msgstr "Phí bảo hiểm"
+
+#. module: delivery_ohub
+msgid "Integration Operations"
+msgstr "Danh sách tác vụ tích hợp"
+
+#. module: delivery_ohub
+msgid "Integration Operations (API Requests)"
+msgstr "Danh sách tác vụ tích hợp (API Requests)"
+
+#. module: delivery_ohub
+msgid "Internal Reference"
+msgstr "Mã quản lý nội bộ"
+
+#. module: delivery_ohub
+msgid "Internal Shipping Order Code"
+msgstr "Mã vận đơn nội bộ"
+
+#. module: delivery_ohub
+msgid "Internal State"
+msgstr "Trạng thái nội bộ"
+
+#. module: delivery_ohub
+msgid "Issues / Returns"
+msgstr "Gặp sự cố / Hoàn hàng"
+
+#. module: delivery_ohub
+msgid "Last Event Time"
+msgstr "Thời gian sự kiện mới nhất"
+
+#. module: delivery_ohub
+msgid "Last Synchronized Date"
+msgstr "Lần đồng bộ gần nhất"
+
+#. module: delivery_ohub
+msgid "Latest Shipping Status"
+msgstr "Tiến độ vận đơn mới nhất"
+
+#. module: delivery_ohub
+msgid "Length (cm)"
+msgstr "Chiều dài (cm)"
+
+#. module: delivery_ohub
+msgid "Level 1 - Province / City"
+msgstr "Cấp 1 - Tỉnh/Thành phố"
+
+#. module: delivery_ohub
+msgid "Level 3 - Ward / Commune"
+msgstr "Cấp 3 - Phường/Xã"
+
+#. module: delivery_ohub
+msgid "Linked Shipping Orders"
+msgstr "Danh sách vận đơn liên kết"
+
+#. module: delivery_ohub
+msgid "Log Count"
+msgstr "Số lượng log"
+
+#. module: delivery_ohub
+msgid "Lookup Order Code"
+msgstr "Mã vận đơn tra cứu"
+
+#. module: delivery_ohub
+msgid "Lost"
+msgstr "Hàng thất lạc (lost)"
+
+#. module: delivery_ohub
+msgid "Manual"
+msgstr "Thủ công"
+
+#. module: delivery_ohub
+msgid "Manual Sync"
+msgstr "Đồng bộ thủ công"
+
+#. module: delivery_ohub
+msgid "Mapping Description"
+msgstr "Mô tả ánh xạ"
+
+#. module: delivery_ohub
+msgid "Matched"
+msgstr "Đã khớp"
+
+#. module: delivery_ohub
+msgid "Matching Method"
+msgstr "Cách thức khớp"
+
+#. module: delivery_ohub
+msgid "Missing State/Province or Ward/Commune to resolve shipping address."
+msgstr "Thiếu thông tin Tỉnh/Thành hoặc Phường/Xã để tra cứu địa chỉ giao vận."
+
+#. module: delivery_ohub
+msgid "New"
+msgstr "Mới"
+
+#. module: delivery_ohub
+msgid "New Mapping"
+msgstr "Ánh xạ mới"
+
+#. module: delivery_ohub
+msgid "Not Checked"
+msgstr "Chưa kiểm tra"
+
+#. module: delivery_ohub
+msgid "ORIS - Carrier Address Mapping"
+msgstr "Ánh xạ địa chính ORIS - Đơn vị vận chuyển"
+
+#. module: delivery_ohub
+msgid "ORIS - Carrier Address Mappings"
+msgstr "Ánh xạ địa chính ORIS - ĐVVC"
+
+#. module: delivery_ohub
+msgid "ORIS Administrative Units"
+msgstr "Đơn vị hành chính ORIS"
+
+#. module: delivery_ohub
+msgid "Operation Name"
+msgstr "Tên hiển thị tác vụ"
+
+#. module: delivery_ohub
+msgid "Operation Type"
+msgstr "Loại tác vụ nghiệp vụ"
+
+#. module: delivery_ohub
+msgid "Order Creation"
+msgstr "Khởi tạo đơn"
+
+#. module: delivery_ohub
+msgid "Order Info Check: Order code '%s' ALREADY EXISTS on carrier system."
+msgstr "Kiểm tra Order Info: Mã vận đơn '%s' ĐÃ TỒN TẠI trên hệ thống ĐVVC."
+
+#. module: delivery_ohub
+msgid "Order Info Check: Order code '%s' DOES NOT EXIST on carrier system (Valid for creating order)."
+msgstr "Kiểm tra Order Info: Mã '%s' CHƯA TỒN TẠI trên ĐVVC (Hợp lệ để tạo đơn mới)."
+
+#. module: delivery_ohub
+msgid "Order Pre-check & Info"
+msgstr "Kiểm tra đơn hàng (Order Info & Pre-check)"
+
+#. module: delivery_ohub
+msgid "Order Pre-check Status"
+msgstr "Trạng thái Order Info"
+
+#. module: delivery_ohub
+msgid "Order already exists on carrier"
+msgstr "Đã tồn tại đơn trên ĐVVC"
+
+#. module: delivery_ohub
+msgid "Order information is not valid according to carrier regulations."
+msgstr "Thông tin đơn hàng không hợp lệ theo quy định của ĐVVC."
+
+#. module: delivery_ohub
+msgid "Outdated Rate Quote"
+msgstr "Báo giá cước đã cũ"
+
+#. module: delivery_ohub
+msgid "Package Weight (g)"
+msgstr "Trọng lượng đóng gói (gram)"
+
+#. module: delivery_ohub
+msgid "Package and delivery address information is valid with carrier."
+msgstr "Thông tin kiện hàng và địa chỉ giao hợp lệ với ĐVVC."
+
+#. module: delivery_ohub
+msgid "Packaging & Cash on Delivery"
+msgstr "Quy cách đóng gói & Tiền thu hộ"
+
+#. module: delivery_ohub
+msgid "Packaging Specification"
+msgstr "Quy cách đóng gói"
+
+#. module: delivery_ohub
+msgid "Parent Unit"
+msgstr "Đơn vị cấp trên"
+
+#. module: delivery_ohub
+msgid "Partner address for '%(partner_name)s' is missing required fields: %(fields)s."
+msgstr "Địa chỉ của đối tác '%(partner_name)s' thiếu thông tin bắt buộc: %(fields)s."
+
+#. module: delivery_ohub
+msgid "Payment Type"
+msgstr "Người trả cước"
+
+#. module: delivery_ohub
+msgid "Picked"
+msgstr "Đã lấy hàng (picked)"
+
+#. module: delivery_ohub
+msgid "Picking"
+msgstr "Đang lấy hàng (picking)"
+
+#. module: delivery_ohub
+msgid "Please select an 'oHUB Integration' delivery method before fetching fee quotes."
+msgstr "Vui lòng chọn một phương thức giao hàng loại 'Tích hợp oHUB' trước khi lấy bảng phí."
+
+#. module: delivery_ohub
+msgid "Please select an 'oHUB Integration' delivery method."
+msgstr "Vui lòng chọn một phương thức giao hàng loại 'Tích hợp oHUB'."
+
+#. module: delivery_ohub
+msgid "Primary"
+msgstr "Nổi bật (Primary)"
+
+#. module: delivery_ohub
+msgid "Print Label"
+msgstr "In nhãn vận chuyển (Generate Print Token)"
+
+#. module: delivery_ohub
+msgid "Prioritize using this mapping if a ward corresponds to multiple carrier codes."
+msgstr "Ưu tiên sử dụng bản ghi này nếu một phường xã có nhiều mã ĐVVC tương ứng."
+
+#. module: delivery_ohub
+msgid "Processing Hub / Station"
+msgstr "Kho / Bưu cục xử lý"
+
+#. module: delivery_ohub
+msgid "Province / City"
+msgstr "Tỉnh / Thành phố"
+
+#. module: delivery_ohub
+msgid "Raw Payload (JSON)"
+msgstr "Dữ liệu thô (JSON)"
+
+#. module: delivery_ohub
+msgid "Ready to Pick"
+msgstr "Chờ lấy hàng (ready_to_pick)"
+
+#. module: delivery_ohub
+msgid "Ready to Ship"
+msgstr "Chờ lấy hàng"
+
+#. module: delivery_ohub
+msgid "Reason Code"
+msgstr "Mã lý do"
+
+#. module: delivery_ohub
+msgid "Reason: %s"
+msgstr "Lý do: %s"
+
+#. module: delivery_ohub
+msgid "Recipient / Customer"
+msgstr "Khách hàng / Người nhận"
+
+#. module: delivery_ohub
+msgid "Recipient Address"
+msgstr "Địa chỉ chi tiết"
+
+#. module: delivery_ohub
+msgid "Recipient Name"
+msgstr "Tên người nhận"
+
+#. module: delivery_ohub
+msgid "Recipient Pays"
+msgstr "Người nhận trả cước"
+
+#. module: delivery_ohub
+msgid "Recipient Phone"
+msgstr "Số điện thoại"
+
+#. module: delivery_ohub
+msgid "Redeliver Order"
+msgstr "Yêu cầu giao lại (Delivery Again)"
+
+#. module: delivery_ohub
+msgid "Reference"
+msgstr "Mã quản lý"
+
+#. module: delivery_ohub
+msgid "Request Redelivery"
+msgstr "Yêu cầu giao lại"
+
+#. module: delivery_ohub
+msgid "Request Return"
+msgstr "Yêu cầu chuyển hoàn"
+
+#. module: delivery_ohub
+msgid "Return"
+msgstr "Chuyển hoàn (return)"
+
+#. module: delivery_ohub
+msgid "Return Failed"
+msgstr "Hoàn hàng thất bại (return_fail)"
+
+#. module: delivery_ohub
+msgid "Return Order"
+msgstr "Yêu cầu chuyển hoàn (Return Order)"
+
+#. module: delivery_ohub
+msgid "Return Sorting"
+msgstr "Phân loại hàng hoàn (return_sorting)"
+
+#. module: delivery_ohub
+msgid "Return Transporting"
+msgstr "Luân chuyển hàng hoàn (return_transporting)"
+
+#. module: delivery_ohub
+msgid "Returned"
+msgstr "Hoàn hàng thành công (returned)"
+
+#. module: delivery_ohub
+msgid "Returning"
+msgstr "Đang phát hàng hoàn (returning)"
+
+#. module: delivery_ohub
+msgid "Sales Order"
+msgstr "Đơn bán hàng"
+
+#. module: delivery_ohub
+msgid "Scheduled Cron"
+msgstr "Lịch quét định kỳ"
+
+#. module: delivery_ohub
+msgid "Scrapped"
+msgstr "Tiêu hủy (scrap)"
+
+#. module: delivery_ohub
+msgid "Search Address Mappings"
+msgstr "Tìm kiếm ánh xạ địa chính"
+
+#. module: delivery_ohub
+msgid "Search Administrative Units"
+msgstr "Tìm kiếm đơn vị hành chính"
+
+#. module: delivery_ohub
+msgid "Search Shipping Orders"
+msgstr "Tìm kiếm vận đơn"
+
+#. module: delivery_ohub
+msgid "Secondary"
+msgstr "Tiêu chuẩn (Secondary)"
+
+#. module: delivery_ohub
+msgid "Select Quote"
+msgstr "Chọn gói này"
+
+#. module: delivery_ohub
+msgid "Selected"
+msgstr "Được chọn"
+
+#. module: delivery_ohub
+msgid "Sender / Shop Pays"
+msgstr "Shop trả cước"
+
+#. module: delivery_ohub
+msgid "Sender Contact Address"
+msgstr "Địa chỉ liên hệ gửi hàng"
+
+#. module: delivery_ohub
+msgid "Sender Detailed Address"
+msgstr "Địa chỉ lấy hàng chi tiết"
+
+#. module: delivery_ohub
+msgid "Sender Phone"
+msgstr "Số điện thoại gửi hàng"
+
+#. module: delivery_ohub
+msgid "Sender State / Province"
+msgstr "Tỉnh / TP gửi hàng"
+
+#. module: delivery_ohub
+msgid "Sender Ward / Commune"
+msgstr "Phường / Xã gửi hàng"
+
+#. module: delivery_ohub
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: delivery_ohub
+msgid "Service ID (service_id)"
+msgstr "Mã dịch vụ (service_id)"
+
+#. module: delivery_ohub
+msgid "Service Package"
+msgstr "Gói dịch vụ"
+
+#. module: delivery_ohub
+msgid "Service Type ID (service_type_id)"
+msgstr "Mã loại dịch vụ (service_type_id)"
+
+#. module: delivery_ohub
+msgid "Shipping Order"
+msgstr "Vận đơn"
+
+#. module: delivery_ohub
+msgid "Shipping Order Count"
+msgstr "Số lượng vận đơn"
+
+#. module: delivery_ohub
+msgid "Shipping Order Event Log"
+msgstr "Nhật ký sự kiện vận đơn"
+
+#. module: delivery_ohub
+msgid "Shipping Order via oHUB"
+msgstr "Vận đơn giao hàng qua oHUB"
+
+#. module: delivery_ohub
+msgid "Shipping Orders"
+msgstr "Danh sách vận đơn"
+
+#. module: delivery_ohub
+msgid "Shipping fee quote is outdated due to changes in cargo or delivery address. Please click <b>Get Carrier Rates</b> to recalculate before shipping."
+msgstr "Báo giá cước vận chuyển đã cũ do thông tin hàng hóa hoặc địa chỉ giao đã thay đổi. Vui lòng bấm <b>Lấy bảng phí ĐVVC</b> để cập nhật lại trước khi gửi đơn."
+
+#. module: delivery_ohub
+msgid "Shipping order %(order_code)s encountered an exception: %(status)s. Reason: %(reason)s"
+msgstr "Vận đơn %(order_code)s gặp trạng thái ngoại lệ: %(status)s. Lý do: %(reason)s"
+
+#. module: delivery_ohub
+msgid "Shipping order <b>%(order_code)s</b> status updated: <b>%(status)s</b>.<br/>Hub/Station: %(warehouse)s.<br/>%(extra)s"
+msgstr "Vận đơn <b>%(order_code)s</b> cập nhật tiến trình: <b>%(status)s</b>.<br/>Kho/Bưu cục: %(warehouse)s.<br/>%(extra)s"
+
+#. module: delivery_ohub
+msgid "Shipping order issue: %s"
+msgstr "Vận đơn gặp sự cố: %s"
+
+#. module: delivery_ohub
+msgid "Shipping warehouse for delivery method '%(carrier)s' is missing State/Province or Ward/Commune."
+msgstr "Kho gửi hàng của phương thức '%(carrier)s' chưa có đủ Tỉnh/Thành và Phường/Xã."
+
+#. module: delivery_ohub
+msgid "Shop ID provided by carrier (e.g. GHN ShopId)."
+msgstr "Mã Shop ID do đơn vị vận chuyển cấp (ví dụ GHN ShopId)."
+
+#. module: delivery_ohub
+msgid "Show Button on Sales Order"
+msgstr "Hiển thị nút trên đơn bán"
+
+#. module: delivery_ohub
+msgid "Sort Code"
+msgstr "Mã phân loại bưu cục"
+
+#. module: delivery_ohub
+msgid "Sorting"
+msgstr "Đang phân loại (sorting)"
+
+#. module: delivery_ohub
+msgid "Specific notes for shipper / courier..."
+msgstr "Lưu ý cụ thể cho bưu tá..."
+
+#. module: delivery_ohub
+msgid "Standard"
+msgstr "Tiêu chuẩn"
+
+#. module: delivery_ohub
+msgid "State / Province"
+msgstr "Tỉnh / Thành phố"
+
+#. module: delivery_ohub
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: delivery_ohub
+msgid "Store / Warehouse ID (Shop ID)"
+msgstr "Mã gian hàng / Kho gửi (Shop ID)"
+
+#. module: delivery_ohub
+msgid "Storing in Hub"
+msgstr "Lưu kho (storing)"
+
+#. module: delivery_ohub
+msgid "Street Address"
+msgstr "Địa chỉ chi tiết (Đường / Số nhà)"
+
+#. module: delivery_ohub
+msgid "Subordinate Units"
+msgstr "Đơn vị trực thuộc"
+
+#. module: delivery_ohub
+msgid "Successfully created shipping order on carrier. Carrier Code: %s"
+msgstr "Đã tạo vận đơn giao hàng thành công trên ĐVVC. Mã vận đơn: %s"
+
+#. module: delivery_ohub
+msgid "Successfully sent cancellation request to carrier."
+msgstr "Đã gửi yêu cầu hủy vận đơn thành công tới ĐVVC."
+
+#. module: delivery_ohub
+msgid "Successfully sent redelivery request to carrier."
+msgstr "Đã gửi yêu cầu giao lại kiện hàng thành công tới ĐVVC."
+
+#. module: delivery_ohub
+msgid "Successfully sent return request to carrier."
+msgstr "Đã gửi yêu cầu chuyển hoàn kiện hàng thành công tới ĐVVC."
+
+#. module: delivery_ohub
+msgid "Sync"
+msgstr "Đồng bộ"
+
+#. module: delivery_ohub
+msgid "Sync Tracking"
+msgstr "Đồng bộ hành trình (Tracking)"
+
+#. module: delivery_ohub
+msgid "Sync from Carrier"
+msgstr "Đồng bộ từ ĐVVC"
+
+#. module: delivery_ohub
+msgid "Synchronous"
+msgstr "Đồng bộ trực tiếp"
+
+#. module: delivery_ohub
+msgid "The address '%(ward)s, %(state)s' has not been mapped for delivery method '%(carrier)s'."
+msgstr "Địa chỉ '%(ward)s, %(state)s' chưa được cấu hình ánh xạ với đơn vị vận chuyển '%(carrier)s'."
+
+#. module: delivery_ohub
+msgid "The administrative unit code must be unique per level and country."
+msgstr "Mã đơn vị hành chính phải là duy nhất theo từng cấp và quốc gia."
+
+#. module: delivery_ohub
+msgid "The sales order already has an active shipping order: %s. Cannot create duplicate shipping order."
+msgstr "Đơn bán hàng đã có vận đơn đang hiệu lực: %s. Không thể tạo trùng vận đơn."
+
+#. module: delivery_ohub
+msgid "The sales order must be in 'Sales Order' state to create a shipping order."
+msgstr "Đơn bán hàng phải ở trạng thái 'Đơn bán hàng' (sale) mới có thể tạo vận đơn."
+
+#. module: delivery_ohub
+msgid "The shipping order does not have a carrier tracking code to print label."
+msgstr "Vận đơn chưa có mã vận đơn ĐVVC để in nhãn."
+
+#. module: delivery_ohub
+msgid "The shipping order does not have a carrier tracking code to query."
+msgstr "Vận đơn chưa có mã vận đơn ĐVVC để tra cứu."
+
+#. module: delivery_ohub
+msgid "Total Fee"
+msgstr "Tổng cước phí"
+
+#. module: delivery_ohub
+msgid "Tracking & Timestamps"
+msgstr "Hành trình & Thời gian"
+
+#. module: delivery_ohub
+msgid "Tracking Logs"
+msgstr "Nhật ký hành trình"
+
+#. module: delivery_ohub
+msgid "Tracking Logs & Webhooks"
+msgstr "Nhật ký hành trình & Webhook"
+
+#. module: delivery_ohub
+msgid "Transporting"
+msgstr "Đang luân chuyển (transporting)"
+
+#. module: delivery_ohub
+msgid "Unit Code"
+msgstr "Mã đơn vị"
+
+#. module: delivery_ohub
+msgid "Unit Name"
+msgstr "Tên đơn vị"
+
+#. module: delivery_ohub
+msgid "Unknown"
+msgstr "Không xác định"
+
+#. module: delivery_ohub
+msgid "Unmatched"
+msgstr "Chưa khớp"
+
+#. module: delivery_ohub
+msgid "Update COD Amount"
+msgstr "Cập nhật tiền thu hộ (Update COD)"
+
+#. module: delivery_ohub
+msgid "Updated latest information from carrier. Status: %s"
+msgstr "Đã đồng bộ thông tin mới nhất từ ĐVVC. Trạng thái: %s"
+
+#. module: delivery_ohub
+msgid "Valid (Not found on carrier)"
+msgstr "Hợp lệ (Chưa tồn tại trên ĐVVC)"
+
+#. module: delivery_ohub
+msgid "Validate (Preview)"
+msgstr "Kiểm tra hợp lệ (Preview)"
+
+#. module: delivery_ohub
+msgid "Validate / Preview Order"
+msgstr "Kiểm tra hợp lệ (Preview Order)"
+
+#. module: delivery_ohub
+msgid "Validation Successful"
+msgstr "Kiểm tra hợp lệ thành công"
+
+#. module: delivery_ohub
+msgid "Waiting to Return"
+msgstr "Chờ xác nhận chuyển hoàn (waiting_to_return)"
+
+#. module: delivery_ohub
+msgid "Ward / Commune"
+msgstr "Phường / Xã"
+
+#. module: delivery_ohub
+msgid "Ward / Commune Code"
+msgstr "Mã Phường / Xã"
+
+#. module: delivery_ohub
+msgid "Warning"
+msgstr "Cảnh báo (Warning)"
+
+#. module: delivery_ohub
+msgid "Webhook Push"
+msgstr "Webhook Push"
+
+#. module: delivery_ohub
+msgid "Weight (g)"
+msgstr "Trọng lượng (gram)"
+
+#. module: delivery_ohub
+msgid "Width (cm)"
+msgstr "Chiều rộng (cm)"
+
+#. module: delivery_ohub
+msgid "oHUB / GHN Delivery"
+msgstr "Giao vận oHUB / GHN"
+
+#. module: delivery_ohub
+msgid "oHUB Delivery"
+msgstr "Giao vận oHUB"
+
+#. module: delivery_ohub
+msgid "oHUB Delivery Integration Operation"
+msgstr "Tác vụ tích hợp giao vận qua oHUB"
+
+#. module: delivery_ohub
+msgid "oHUB Integration"
+msgstr "Tích hợp oHUB"
+
+#. module: delivery_ohub
+msgid "oHUB Integration Flow"
+msgstr "Luồng tích hợp oHUB"
+
+#. module: delivery_ohub
+msgid "oHUB Integration Operation"
+msgstr "Tác vụ tích hợp oHUB"
+
+#. module: delivery_ohub
+msgid "oHUB Integration Operations"
+msgstr "Tác vụ tích hợp oHUB"
+
+#. module: delivery_ohub
+msgid "oHUB Operations"
+msgstr "Tác vụ tích hợp oHUB"

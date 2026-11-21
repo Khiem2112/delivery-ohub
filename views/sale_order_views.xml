@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form_inherit_delivery_ohub" model="ir.ui.view">
+        <field name="name">sale.order.form.delivery.ohub</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_shipping_orders"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-truck"
+                    invisible="shipping_order_count == 0">
+                    <field name="shipping_order_count" widget="statinfo" string="Shipping Orders" />
+                </button>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page name="ohub_delivery_tab" string="oHUB Delivery Integration">
+                    <div class="alert alert-warning mb-2" role="alert" invisible="not fee_outdated">
+                        Shipping fee quote is outdated due to changes in cargo or delivery address.
+                        Please click <b>Choose Delivery Carrier / Calculate Rate</b> to recalculate before confirming.
+                    </div>
+
+                    <group>
+                        <group string="Delivery Template Settings">
+                            <field name="carrier_id" options="{'no_create': True}" readonly="state in ['cancel']" />
+                            <field name="delivery_service_name" readonly="1" />
+                            <field name="delivery_service_code" readonly="1" />
+                            <field name="delivery_service_type" readonly="1" />
+                            <field name="delivery_service_id" invisible="1" />
+                            <field name="shipping_payment_type" readonly="state in ['cancel']" />
+                        </group>
+                    </group>
+
+                    <div class="d-flex gap-2 my-3">
+                        <button name="action_open_delivery_wizard"
+                            string="Choose Delivery Carrier / Calculate Rate"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state in ['cancel']" />
+                    </div>
+
+                    <separator string="Linked Shipping Orders (From Warehouse)" />
+                    <field name="shipping_order_ids" nolabel="1" readonly="1">
+                        <list>
+                            <field name="order_code" />
+                            <field name="client_order_code" />
+                            <field name="picking_id" />
+                            <field name="to_name" />
+                            <field name="carrier_status" widget="badge" />
+                            <field name="cod_amount" widget="monetary" />
+                            <field name="actual_total_fee" widget="monetary" />
+                            <field name="expected_delivery_time" />
+                            <button name="action_sync_order_info"
+                                string="Sync"
+                                type="object"
+                                class="btn-secondary btn-sm" />
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

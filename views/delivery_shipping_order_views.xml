@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_delivery_shipping_order_tree" model="ir.ui.view">
+        <field name="name">delivery.shipping.order.list</field>
+        <field name="model">delivery.shipping.order</field>
+        <field name="arch" type="xml">
+            <list string="Shipping Orders"
+                decoration-info="carrier_status in ['ready_to_pick', 'picking', 'transporting', 'delivering']"
+                decoration-success="carrier_status == 'delivered'"
+                decoration-danger="carrier_status in ['cancel', 'delivery_fail', 'lost', 'damage'] or internal_state == 'cancelled'"
+                decoration-warning="carrier_status in ['waiting_to_return', 'return', 'returning']"
+                decoration-muted="internal_state == 'draft'">
+                <field name="name" />
+                <field name="order_code" />
+                <field name="client_order_code" />
+                <field name="carrier_id" />
+                <field name="company_id" groups="base.group_multi_company" optional="show" />
+                <field name="service_name" optional="show" />
+                <field name="sale_order_id" />
+                <field name="to_name" />
+                <field name="to_phone" />
+                <field name="cod_amount" />
+                <field name="actual_total_fee" />
+                <field name="carrier_status" widget="badge" />
+                <field name="expected_delivery_time" />
+                <field name="last_event_time" />
+            </list>
+        </field>
+    </record>
+
+    <record id="view_delivery_shipping_order_form" model="ir.ui.view">
+        <field name="name">delivery.shipping.order.form</field>
+        <field name="model">delivery.shipping.order</field>
+        <field name="arch" type="xml">
+            <form string="Shipping Order">
+                <header>
+                    <button name="action_send_to_carrier" string="Create on Carrier" type="object"
+                        class="oe_highlight" invisible="order_code != False" />
+                    <button name="action_preview_with_carrier" string="Validate (Preview)"
+                        type="object" class="btn-secondary" invisible="order_code != False" />
+                    <button name="action_sync_order_info" string="Sync from Carrier" type="object"
+                        class="btn-secondary" invisible="not order_code" />
+                    <button name="action_print_label" string="Print Label" type="object"
+                        class="btn-secondary" invisible="not order_code" />
+                    <button name="action_cancel_order" string="Cancel Shipping Order" type="object"
+                        class="btn-danger"
+                        invisible="internal_state in ['delivered', 'cancelled', 'returned'] or (order_code and carrier_status != 'ready_to_pick')"
+                        confirm="Are you sure you want to cancel this shipping order?" />
+                    <button name="action_delivery_again" string="Request Redelivery" type="object"
+                        class="btn-warning"
+                        invisible="carrier_status not in ['storing', 'waiting_to_return', 'delivery_fail']" />
+                    <button name="action_request_return" string="Request Return" type="object"
+                        class="btn-warning"
+                        invisible="carrier_status not in ['storing', 'waiting_to_return', 'delivery_fail']"
+                        confirm="Are you sure you want to request the carrier to return this package to the warehouse?" />
+                    <field name="carrier_status" widget="statusbar"
+                        statusbar_visible="ready_to_pick,delivering,delivered" />
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_picking"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-truck"
+                            invisible="not picking_id">
+                            <field name="move_count" widget="statinfo" string="Delivery Items" />
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Internal Reference" />
+                        <h1>
+                            <field name="name" readonly="1" />
+                        </h1>
+                        <div class="d-flex gap-3 align-items-center mt-1">
+                            <div>
+                                <span class="text-muted">Client Code: </span>
+                                <field name="client_order_code" class="oe_inline fw-bold" />
+                            </div>
+                            <div invisible="not order_code">
+                                <span class="text-muted">| Carrier Code: </span>
+                                <field name="order_code" class="oe_inline fw-bold text-primary" />
+                            </div>
+                            <div invisible="not sort_code">
+                                <span class="text-muted">| Sort Code: </span>
+                                <field name="sort_code" class="oe_inline fw-bold" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <group>
+                        <group string="Order Information">
+                            <field name="picking_id" />
+                            <field name="sale_order_id" />
+                            <field name="client_order_code" />
+                            <field name="expected_delivery_time" />
+                            <field name="company_id" groups="base.group_multi_company" />
+                        </group>
+                        <group string="Carrier Information">
+                            <field name="carrier_id" />
+                            <field name="order_code" />
+                            <field name="sort_code" />
+                            <field name="carrier_status" widget="badge" />
+                            <field name="internal_state" widget="badge" />
+                            <field name="last_sync_at" />
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Items &amp; Packing" name="items_packing">
+                            <group>
+                                <group string="Service Information">
+                                    <field name="service_name" />
+                                    <field name="service_type" />
+                                    <field name="service_code" />
+                                    <field name="service_id" />
+                                </group>
+                                <group string="Package Dimensions &amp; Weight">
+                                    <field name="content" />
+                                    <field name="weight" />
+                                    <field name="converted_weight" />
+                                    <label for="length" string="Dimensions (L x W x H)" />
+                                    <div class="o_row">
+                                        <field name="length" class="oe_inline" /> x
+                                        <field name="width" class="oe_inline" /> x
+                                        <field name="height" class="oe_inline" /> cm
+                                    </div>
+                                </group>
+                            </group>
+                            <separator string="Transported Items" />
+                            <field name="move_ids" readonly="1">
+                                <list string="Stock Moves">
+                                    <field name="product_id" />
+                                    <field name="quantity" string="Shipped Quantity" />
+                                    <field name="product_uom_qty" string="Demand Quantity"
+                                        optional="show" />
+                                    <field name="product_uom" groups="uom.group_uom" />
+                                    <field name="weight" optional="show" />
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Payment" name="payment">
+                            <group>
+                                <group string="Shipping Fees">
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="estimated_fee" widget="monetary" />
+                                    <field name="actual_total_fee" widget="monetary" class="fw-bold" />
+                                    <field name="shipping_fee_amount" widget="monetary" />
+                                </group>
+                                <group string="Payment &amp; COD">
+                                    <field name="payment_type_id" />
+                                    <field name="cod_amount" widget="monetary" class="fw-bold" />
+                                    <field name="cod_failed_amount" widget="monetary" />
+                                    <field name="goods_amount" widget="monetary" />
+                                    <field name="insurance_value" widget="monetary" />
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Sender &amp; Recipient" name="sender_recipient">
+                            <group>
+                                <group string="Sender (Kho gửi / Người gửi)">
+                                    <field name="from_name" />
+                                    <field name="from_phone" />
+                                    <field name="from_address" />
+                                    <field name="from_ward_name" />
+                                    <field name="from_district_name" />
+                                    <field name="from_province_name" />
+                                    <field name="from_ward_code" groups="base.group_no_one" />
+                                    <field name="from_district_id" groups="base.group_no_one" />
+                                </group>
+                                <group string="Recipient (Người nhận / Người lấy)">
+                                    <field name="partner_id" />
+                                    <field name="to_name" />
+                                    <field name="to_phone" />
+                                    <field name="to_address" />
+                                    <field name="to_ward_name" />
+                                    <field name="to_district_name" />
+                                    <field name="to_province_name" />
+                                    <field name="to_ward_code" groups="base.group_no_one" />
+                                    <field name="to_district_id" groups="base.group_no_one" />
+                                </group>
+                            </group>
+                            <group string="Delivery Notes &amp; Instructions">
+                                <field name="required_note" />
+                                <field name="note" />
+                            </group>
+                        </page>
+
+                        <page string="Tracking &amp; Logs" name="tracking_logs">
+                            <group string="Tracking Timestamps">
+                                <group>
+                                    <field name="carrier_status" widget="badge" />
+                                    <field name="internal_state" widget="badge" />
+                                </group>
+                                <group>
+                                    <field name="expected_delivery_time" />
+                                    <field name="last_event_time" />
+                                    <field name="last_sync_at" />
+                                </group>
+                            </group>
+                            <separator string="Carrier Event Logs" />
+                            <field name="log_ids" readonly="1">
+                                <list>
+                                    <field name="event_time" />
+                                    <field name="carrier_status" widget="badge" />
+                                    <field name="warehouse" />
+                                    <field name="description" />
+                                    <field name="reason" />
+                                    <field name="total_fee" />
+                                    <field name="source" />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter />
+            </form>
+        </field>
+    </record>
+
+    <record id="view_delivery_shipping_order_search" model="ir.ui.view">
+        <field name="name">delivery.shipping.order.search</field>
+        <field name="model">delivery.shipping.order</field>
+        <field name="arch" type="xml">
+            <search string="Search Shipping Orders">
+                <field name="name" />
+                <field name="order_code" />
+                <field name="client_order_code" />
+                <field name="company_id" groups="base.group_multi_company" />
+                <field name="picking_id" />
+                <field name="sale_order_id" />
+                <field name="to_name" />
+                <field name="to_phone" />
+                <filter string="Ready to Pick" name="filter_ready"
+                    domain="[('carrier_status', '=', 'ready_to_pick')]" />
+                <filter string="Delivering" name="filter_delivering"
+                    domain="[('carrier_status', '=', 'delivering')]" />
+                <filter string="Delivered" name="filter_delivered"
+                    domain="[('carrier_status', '=', 'delivered')]" />
+                <filter string="Issues / Returns" name="filter_issue"
+                    domain="[('carrier_status', 'in', ['delivery_fail', 'waiting_to_return', 'return', 'returning', 'lost', 'damage'])]" />
+                <filter string="Cancelled" name="filter_cancelled"
+                    domain="[('carrier_status', '=', 'cancel')]" />
+                <group expand="0" string="Group By">
+                    <filter string="Company" name="group_by_company"
+                        context="{'group_by': 'company_id'}" groups="base.group_multi_company" />
+                    <filter string="Internal State" name="group_by_internal_state"
+                        context="{'group_by': 'internal_state'}" />
+                    <filter string="Carrier Status" name="group_by_status"
+                        context="{'group_by': 'carrier_status'}" />
+                    <filter string="Delivery Method" name="group_by_carrier"
+                        context="{'group_by': 'carrier_id'}" />
+                    <filter string="Sales Order" name="group_by_sale_order"
+                        context="{'group_by': 'sale_order_id'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_delivery_shipping_order" model="ir.actions.act_window">
+        <field name="name">Shipping Orders</field>
+        <field name="res_model">delivery.shipping.order</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
