@@ -86,13 +86,21 @@ class DeliveryAddressMapping(models.Model):
             ('active', '=', True),
             ('state', '=', 'matched'),
         ]
-        if carrier.hub_flow_id:
-            carrier_domain = domain + [('hub_flow_id', '=', carrier.hub_flow_id.id)]
-            mapping = self.search(carrier_domain, order='is_default desc, id desc', limit=1)
-            if mapping:
-                return mapping
+        carrier_domain = list(domain)
+        if carrier.hub_flow_id and carrier.id:
+            carrier_domain += [
+                '|',
+                ('carrier_id', '=', carrier.id),
+                '&',
+                ('carrier_id', '=', False),
+                ('hub_flow_id', '=', carrier.hub_flow_id.id),
+            ]
+        elif carrier.hub_flow_id:
+            carrier_domain += [('hub_flow_id', '=', carrier.hub_flow_id.id)]
+        elif carrier.id:
+            carrier_domain += [('carrier_id', '=', carrier.id)]
 
-        mapping = self.search(domain, order='is_default desc, id desc', limit=1)
+        mapping = self.search(carrier_domain, order='is_default desc, id desc', limit=1)
         if not mapping:
             raise UserError(
                 _("The address '%(ward)s, %(state)s' has not been mapped for delivery method '%(carrier)s'.")

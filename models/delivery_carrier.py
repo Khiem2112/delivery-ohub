@@ -141,34 +141,30 @@ class DeliveryCarrier(models.Model):
             }
 
         res = self.execute_ohub_operation('rate_shipment', record=shipping_order)
-        fee_data = res.get('payload') or {}
-        data = (
-            fee_data.get('data')
-            if isinstance(fee_data, dict) and isinstance(fee_data.get('data'), dict)
-            else fee_data
-        )
-
-        total_fee = float(
-            data.get('total_fee')
-            or data.get('fee')
-            or data.get('total')
-            or data.get('shipping_fee')
-            or 0.0
-        ) if isinstance(data, dict) else 0.0
-
-        error_message = False
-        if isinstance(data, dict):
-            error_message = data.get('error_message') or data.get('message') or data.get('msg')
-        elif isinstance(fee_data, dict):
-            error_message = fee_data.get('error_message') or fee_data.get('message') or fee_data.get('msg')
-
-        if total_fee <= 0 and error_message:
+        fee_data = res.get('payload') if isinstance(res, dict) else {}
+        if not isinstance(fee_data, dict):
             return {
                 'success': False,
                 'price': 0.0,
-                'error_message': error_message,
+                'error_message': _("Carrier integration did not return a valid rate_shipment response."),
                 'warning_message': False,
             }
+
+        if fee_data.get('error_message'):
+            return {
+                'success': False,
+                'price': 0.0,
+                'error_message': str(fee_data['error_message']),
+                'warning_message': False,
+            }
+
+        self.env["delivery.shipping.order"]._validate_contract_payload(
+            fee_data, ["total_fee", "service_fee"], "rate_shipment"
+        )
+        total_fee = float(fee_data["total_fee"])
+        service_fee = float(fee_data["service_fee"])
+        insurance_fee = float(fee_data.get("insurance_fee") or 0.0)
+        cod_fee = float(fee_data.get("cod_fee") or 0.0)
 
         carrier_currency = self.currency_id or self.company_id.currency_id or self.env.company.currency_id
         if hasattr(order, '_name') and order._name == 'stock.picking':
@@ -263,12 +259,21 @@ class DeliveryCarrier(models.Model):
             return True
 
         res = self.execute_ohub_operation("cancel_shipment", record=shipping_order)
-        is_success, err_msg = shipping_order._parse_carrier_response(res)
+        payload = res.get("payload") if isinstance(res, dict) else res
+        if not isinstance(payload, dict):
+            raise UserError(_("Carrier integration did not return a valid cancellation response."))
+
+        self.env["delivery.shipping.order"]._validate_contract_payload(
+            payload, ["success", "carrier_status"], "cancel_shipment"
+        )
+        is_success = bool(payload["success"])
+        carrier_status = str(payload["carrier_status"])
         if not is_success:
-            raise UserError(err_msg or _("Carrier rejected the cancellation request."))
+            err_msg = payload.get("message") or _("Carrier rejected the cancellation request.")
+            raise UserError(err_msg)
 
         shipping_order.write({
-            "carrier_status": "cancel",
+            "carrier_status": carrier_status,
             "internal_state": "cancelled",
         })
         shipping_order.message_post(body=_("Successfully sent cancellation request to carrier."))
@@ -343,18 +348,12 @@ class DeliveryCarrier(models.Model):
             res_services = self.execute_ohub_operation(
                 "available_services", record=shipping_order
             )
-            payload = res_services.get("payload") or []
-            if isinstance(payload, dict):
-                if "data" in payload and isinstance(payload["data"], list):
-                    services_data = payload["data"]
-                elif "services" in payload and isinstance(payload["services"], list):
-                    services_data = payload["services"]
-                elif "items" in payload and isinstance(payload["items"], list):
-                    services_data = payload["items"]
-                else:
-                    services_data = [payload]
-            elif isinstance(payload, list):
-                services_data = payload
+            payload = res_services.get("payload") if isinstance(res_services, dict) else {}
+            if not isinstance(payload, dict) or "services" not in payload or not isinstance(payload["services"], list):
+                raise UserError(
+                    _("Contract violation in 'available_services': response payload must contain a 'services' list.")
+                )
+            services_data = payload["services"]
 
         if not op_available:
             raise UserError(
@@ -386,51 +385,34 @@ class DeliveryCarrier(models.Model):
             for svc in services_data:
                 if not isinstance(svc, dict):
                     continue
-                service_id = (
-                    svc.get("service_id")
-                    or svc.get("id")
-                    or svc.get("service_code")
+                self.env["delivery.shipping.order"]._validate_contract_payload(
+                    svc,
+                    [
+                        "service_id",
+                        "service_code",
+                        "service_name",
+                        "service_type",
+                        "total_fee",
+                        "service_fee",
+                    ],
+                    "available_services.service",
                 )
-                service_code = str(
-                    svc.get("service_code")
-                    or svc.get("code")
-                    or service_id
-                    or "standard"
-                )
-                service_name = (
-                    svc.get("service_name")
-                    or svc.get("name")
-                    or svc.get("short_name")
-                    or _("Standard Delivery")
-                )
-                service_type = (
-                    svc.get("service_type")
-                    or svc.get("type")
-                    or "standard"
-                )
+                service_id = svc["service_id"]
+                service_code = str(svc["service_code"])
+                service_name = str(svc["service_name"])
+                service_type = str(svc["service_type"]).lower()
+                if service_type not in ("standard", "express", "economy"):
+                    raise UserError(
+                        _(
+                            "Contract violation in 'available_services': invalid service_type '%(type)s'. Must be standard, express, or economy."
+                        )
+                        % {"type": service_type}
+                    )
 
-                raw_total = float(
-                    svc.get("total_fee")
-                    or svc.get("fee")
-                    or svc.get("total")
-                    or svc.get("price")
-                    or 0.0
-                )
-                raw_service = float(
-                    svc.get("service_fee")
-                    or svc.get("main_service")
-                    or raw_total
-                    or 0.0
-                )
-                raw_insurance = float(
-                    svc.get("insurance_fee")
-                    or svc.get("insurance")
-                    or 0.0
-                )
-                raw_cod = float(
-                    svc.get("cod_fee")
-                    or 0.0
-                )
+                raw_total = float(svc["total_fee"])
+                raw_service = float(svc["service_fee"])
+                raw_insurance = float(svc.get("insurance_fee") or 0.0)
+                raw_cod = float(svc.get("cod_fee") or 0.0)
 
                 total_fee = raw_total
                 service_fee = raw_service
@@ -443,12 +425,7 @@ class DeliveryCarrier(models.Model):
                     insurance_fee = self._convert_currency(raw_insurance, carrier_currency, target_currency, company, date_rate)
                     cod_fee = self._convert_currency(raw_cod, carrier_currency, target_currency, company, date_rate)
 
-                error_msg = (
-                    svc.get("error_message")
-                    or svc.get("message")
-                    or svc.get("msg")
-                    or False
-                )
+                error_msg = svc.get("error_message") or False
 
                 quote_dict = {
                     "wizard_id": record.id if is_real_record else False,
@@ -471,6 +448,12 @@ class DeliveryCarrier(models.Model):
                     "cod_failed_amount": record.cod_failed_amount or 0.0,
                 }
                 quotes_vals.append(quote_dict)
+
+            if not quotes_vals:
+                raise UserError(
+                    _("Carrier '%(carrier)s' did not return any valid shipping services for this route.")
+                    % {"carrier": self.name}
+                )
 
             if is_real_record:
                 created_quotes = self.env["delivery.fee.quote"].create(quotes_vals)
@@ -543,43 +526,24 @@ class DeliveryCarrier(models.Model):
                 "service_type": quote.service_type or (wizard.service_type if wizard else False),
             },
         )
-        fee_data = res_fee.get("payload") or {}
-        data = (
-            fee_data.get("data")
-            if isinstance(fee_data, dict) and isinstance(fee_data.get("data"), dict)
-            else fee_data
-        )
-        error_msg = False
-        if isinstance(data, dict):
-            error_msg = data.get("error_message") or data.get("message") or data.get("msg")
-        elif isinstance(fee_data, dict):
-            error_msg = fee_data.get("error_message") or fee_data.get("message") or fee_data.get("msg")
+        fee_data = res_fee.get("payload") if isinstance(res_fee, dict) else {}
+        if not isinstance(fee_data, dict):
+            raise UserError(_("Carrier integration did not return a valid rate_shipment response."))
 
-        total_fee = float(
-            data.get("total_fee")
-            or data.get("fee")
-            or data.get("total")
-            or data.get("shipping_fee")
-            or 0.0
-        ) if isinstance(data, dict) and not error_msg else 0.0
-
-        service_fee = float(
-            data.get("service_fee")
-            or data.get("main_service")
-            or total_fee
-            or 0.0
-        ) if isinstance(data, dict) and not error_msg else 0.0
-
-        insurance_fee = float(
-            data.get("insurance_fee")
-            or data.get("insurance")
-            or 0.0
-        ) if isinstance(data, dict) and not error_msg else 0.0
-
-        cod_fee = float(
-            data.get("cod_fee")
-            or 0.0
-        ) if isinstance(data, dict) and not error_msg else 0.0
+        error_msg = str(fee_data["error_message"]) if fee_data.get("error_message") else False
+        if not error_msg:
+            self.env["delivery.shipping.order"]._validate_contract_payload(
+                fee_data, ["total_fee", "service_fee"], "rate_shipment"
+            )
+            total_fee = float(fee_data["total_fee"])
+            service_fee = float(fee_data["service_fee"])
+            insurance_fee = float(fee_data.get("insurance_fee") or 0.0)
+            cod_fee = float(fee_data.get("cod_fee") or 0.0)
+        else:
+            total_fee = 0.0
+            service_fee = 0.0
+            insurance_fee = 0.0
+            cod_fee = 0.0
 
         raw_total_fee = total_fee
         raw_service_fee = service_fee

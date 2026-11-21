@@ -284,44 +284,73 @@ class DeliveryShippingOrder(models.Model):
             "get_order_info",
             record=self,
         )
-        payload = res.get("payload") or {}
-        data = (
-            payload.get("data")
-            if isinstance(payload, dict) and "data" in payload
-            else payload
-        )
-
-        if not isinstance(data, dict):
+        payload = res.get("payload") if isinstance(res, dict) else {}
+        if not isinstance(payload, dict):
             raise UserError(
-                payload.get("message")
-                or _("Could not retrieve shipping order details from carrier.")
+                _(
+                    "Integration configuration error: Response from oHUB for 'get_order_info' must be a JSON object."
+                )
             )
 
-        carrier_status = (
-            data.get("status")
-            or data.get("carrier_status")
-            or data.get("order_status")
-            or data.get("delivery_status")
-            or self.carrier_status
+        self._validate_contract_payload(
+            payload, ["carrier_status", "internal_state"], "get_order_info"
         )
-        actual_fee = float(
-            data.get("total_fee")
-            or data.get("fee")
-            or data.get("actual_fee")
-            or data.get("shipping_fee")
-            or data.get("total")
-            or 0.0
-        )
-        self.write(
-            {
-                "carrier_status": carrier_status,
-                "internal_state": self._map_internal_state(carrier_status),
-                "actual_total_fee": actual_fee
-                if actual_fee > 0
-                else self.actual_total_fee,
-                "last_sync_at": fields.Datetime.now(),
-            }
-        )
+
+        carrier_status = str(payload["carrier_status"])
+        internal_state = str(payload["internal_state"])
+        converted_weight = int(payload.get("converted_weight") or 0)
+        current_warehouse = str(payload.get("current_warehouse") or "")
+        timeline = payload.get("timeline") or []
+        if not isinstance(timeline, list):
+            raise UserError(
+                _("Contract violation in 'get_order_info': 'timeline' must be a list.")
+            )
+
+        vals = {
+            "carrier_status": carrier_status,
+            "internal_state": internal_state,
+            "last_sync_at": fields.Datetime.now(),
+        }
+        if converted_weight > 0:
+            vals["converted_weight"] = converted_weight
+        self.write(vals)
+
+        log_model = self.env["delivery.shipping.order.log"].sudo()
+        for entry in timeline:
+            if not isinstance(entry, dict):
+                raise UserError(
+                    _("Contract violation in 'get_order_info': timeline entry must be a dictionary.")
+                )
+            self._validate_contract_payload(
+                entry,
+                ["time", "status", "description", "station"],
+                "get_order_info.timeline",
+            )
+            entry_time = str(entry["time"])
+            entry_status = str(entry["status"])
+            entry_desc = str(entry["description"])
+            entry_station = str(entry["station"])
+            event_uid = f"{self.id}_{entry_status}_{entry_time}_sync"
+            if not log_model.search(
+                [
+                    ("shipping_order_id", "=", self.id),
+                    ("event_uid", "=", event_uid),
+                ],
+                limit=1,
+            ):
+                log_model.create(
+                    {
+                        "shipping_order_id": self.id,
+                        "carrier_status": entry_status,
+                        "event_type": "status_update",
+                        "event_time": entry_time,
+                        "event_uid": event_uid,
+                        "warehouse": entry_station,
+                        "description": entry_desc,
+                        "source": "manual",
+                    }
+                )
+
         self.message_post(
             body=_("Updated latest information from carrier. Status: %s")
             % carrier_status
@@ -329,37 +358,35 @@ class DeliveryShippingOrder(models.Model):
         return True
 
     @api.model
+    def _validate_contract_payload(self, payload, required_fields, operation_name):
+        if not isinstance(payload, dict):
+            raise UserError(
+                _(
+                    "Integration configuration error: Response from oHUB for '%(op)s' must be a JSON object."
+                )
+                % {"op": operation_name}
+            )
+        missing = [f for f in required_fields if f not in payload or payload[f] is None]
+        if missing:
+            raise UserError(
+                _(
+                    "Integration configuration error: Response from oHUB for '%(op)s' is missing required contract field(s): %(fields)s."
+                )
+                % {"op": operation_name, "fields": ", ".join(missing)}
+            )
+        return True
+
+    @api.model
     def _parse_carrier_response(self, res):
         payload = res.get("payload") if isinstance(res, dict) else res
-        is_success = False
+        if not isinstance(payload, dict):
+            return False, _("Integration configuration error: Response from oHUB must be a JSON object.")
+
+        self._validate_contract_payload(payload, ["success"], "carrier_operation")
+        is_success = bool(payload["success"])
         err_msg = False
-
-        if isinstance(payload, dict):
-            code = payload.get("code")
-            success_flag = payload.get("success")
-            status = str(payload.get("status", "")).lower()
-            is_success = (
-                success_flag is True
-                or code in (200, "200", 0, "0")
-                or status in ("200", "ok", "success")
-            )
-            err_msg = (
-                payload.get("message")
-                or payload.get("error_message")
-                or payload.get("msg")
-                or False
-            )
-        elif payload is True or (isinstance(res, dict) and res.get("raw_run_result") is True):
-            is_success = True
-
-        if not err_msg and isinstance(res, dict):
-            err_msg = (
-                res.get("message")
-                or res.get("error_message")
-                or res.get("msg")
-                or False
-            )
-
+        if not is_success:
+            err_msg = payload.get("message") or _("Carrier operation rejected.")
         return is_success, err_msg
 
     def action_cancel_order(self):
@@ -385,13 +412,26 @@ class DeliveryShippingOrder(models.Model):
             "cancel_shipment",
             record=self,
         )
-        is_success, err_msg = self._parse_carrier_response(res)
+        payload = res.get("payload") if isinstance(res, dict) else res
+        if not isinstance(payload, dict):
+            raise UserError(
+                _("Carrier integration did not return a valid cancellation response.")
+            )
+
+        self._validate_contract_payload(
+            payload, ["success", "carrier_status"], "cancel_shipment"
+        )
+        is_success = bool(payload["success"])
+        carrier_status = str(payload["carrier_status"])
         if not is_success:
-            raise UserError(err_msg or _("Carrier rejected the cancellation request."))
+            err_msg = payload.get("message") or _(
+                "Carrier rejected the cancellation request."
+            )
+            raise UserError(err_msg)
 
         self.write(
             {
-                "carrier_status": "cancel",
+                "carrier_status": carrier_status,
                 "internal_state": "cancelled",
             }
         )
@@ -400,12 +440,16 @@ class DeliveryShippingOrder(models.Model):
 
     def action_delivery_again(self):
         self.ensure_one()
-        if (
-            self.carrier_status not in ["delivery_fail", "issue", "return_fail", "exception"]
-            and self.internal_state not in ["issue", "delivery_fail"]
-        ):
+        if self.carrier_status not in [
+            "delivery_fail",
+            "issue",
+            "return_fail",
+            "exception",
+        ] and self.internal_state not in ["issue", "delivery_fail"]:
             raise UserError(
-                _("Redelivery can only be requested when the shipping order is in delivery failure or issue status.")
+                _(
+                    "Redelivery can only be requested when the shipping order is in delivery failure or issue status."
+                )
             )
 
         res = self.carrier_id.execute_ohub_operation(
@@ -421,12 +465,16 @@ class DeliveryShippingOrder(models.Model):
 
     def action_request_return(self):
         self.ensure_one()
-        if (
-            self.carrier_status not in ["delivery_fail", "waiting_to_return", "issue", "exception"]
-            and self.internal_state not in ["issue", "delivery_fail"]
-        ):
+        if self.carrier_status not in [
+            "delivery_fail",
+            "waiting_to_return",
+            "issue",
+            "exception",
+        ] and self.internal_state not in ["issue", "delivery_fail"]:
             raise UserError(
-                _("Return can only be requested when delivery has failed or the shipment has an issue.")
+                _(
+                    "Return can only be requested when delivery has failed or the shipment has an issue."
+                )
             )
 
         res = self.carrier_id.execute_ohub_operation(
@@ -459,35 +507,21 @@ class DeliveryShippingOrder(models.Model):
             "print_label",
             record=self,
         )
-        payload = res.get("payload") or {}
-        data = (
-            payload.get("data")
-            if isinstance(payload, dict) and "data" in payload
-            else payload
-        )
-
-        print_url = None
-        for source in [data, payload]:
-            if isinstance(source, dict):
-                print_url = (
-                    source.get("url")
-                    or source.get("print_url")
-                    or source.get("label_url")
-                    or source.get("download_url")
-                    or source.get("link")
-                )
-                if print_url:
-                    break
-            elif isinstance(source, str) and (
-                source.startswith("http://") or source.startswith("https://")
-            ):
-                print_url = source
-                break
-
-        if not print_url:
+        payload = res.get("payload") if isinstance(res, dict) else {}
+        if not isinstance(payload, dict):
             raise UserError(
-                payload.get("message")
-                or _("Carrier integration did not return a printable label URL.")
+                _("Carrier integration did not return a valid print_label response.")
+            )
+
+        if payload.get("error_message"):
+            raise UserError(str(payload["error_message"]))
+
+        self._validate_contract_payload(payload, ["url"], "print_label")
+        print_url = str(payload["url"])
+        if not (print_url.startswith("http://") or print_url.startswith("https://")):
+            raise UserError(
+                _("Carrier integration returned an invalid printable label URL: %s")
+                % print_url
             )
 
         return {
@@ -637,6 +671,37 @@ class DeliveryShippingOrder(models.Model):
         return {"code": 200, "message": "Success"}
 
     @api.model
+    def process_carrier_webhook(self, payload):
+        self._validate_contract_payload(
+            payload, ["order_code", "status"], "process_carrier_webhook"
+        )
+        order_code = str(payload["order_code"])
+        status = str(payload["status"])
+        action_time = payload.get("action_time")
+        warehouse = str(payload.get("warehouse") or "")
+        reason = str(payload.get("reason") or "")
+        converted_weight = int(payload.get("converted_weight") or 0)
+        total_fee = float(payload.get("total_fee") or 0.0)
+
+        shipping_order = self.search([("order_code", "=", order_code)], limit=1)
+        if not shipping_order:
+            raise UserError(
+                _("Shipping order with code '%(code)s' was not found.")
+                % {"code": order_code}
+            )
+
+        return shipping_order.apply_carrier_status_update(
+            status=status,
+            event_time=action_time,
+            total_fee=total_fee,
+            warehouse=warehouse,
+            reason=reason,
+            converted_weight=converted_weight,
+            source="webhook",
+            raw_payload=str(payload),
+        )
+
+    @api.model
     def _resolve_address_payload(
         self,
         carrier,
@@ -770,7 +835,9 @@ class DeliveryShippingOrder(models.Model):
             item_weight = float((product.weight or 0.0) * 1000)
             unit_price = 0.0
             move = getattr(line, "move_id", line)
-            sale_line = getattr(move, "sale_line_id", False) or getattr(line, "sale_line_id", False)
+            sale_line = getattr(move, "sale_line_id", False) or getattr(
+                line, "sale_line_id", False
+            )
             if sale_line:
                 if sale_line.product_uom_qty > 0:
                     unit_price = sale_line.price_total / sale_line.product_uom_qty
@@ -782,9 +849,7 @@ class DeliveryShippingOrder(models.Model):
                 if line.product_uom_qty > 0:
                     unit_price = line.price_total / line.product_uom_qty
                 else:
-                    unit_price = line.price_unit * (
-                        1 - (line.discount or 0.0) / 100.0
-                    )
+                    unit_price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
             elif hasattr(line, "price_unit") and line.price_unit > 0:
                 unit_price = line.price_unit
             elif product.lst_price:
@@ -1252,16 +1317,16 @@ class DeliveryShippingOrder(models.Model):
 
         goods_amount = total_items_price
         prior_active_ships = order.shipping_order_ids.filtered(
-            lambda s: s.internal_state not in ["cancelled"]
-            and s.carrier_status not in ["cancel"]
+            lambda s: (
+                s.internal_state not in ["cancelled"]
+                and s.carrier_status not in ["cancel"]
+            )
         )
 
         shipping_fee_amount = 0.0
         if payment_type == "1" and not prior_active_ships:
             delivery_line = order.order_line.filtered(lambda l: l.is_delivery)[:1]
-            shipping_fee_amount = (
-                delivery_line.price_total if delivery_line else 0.0
-            )
+            shipping_fee_amount = delivery_line.price_total if delivery_line else 0.0
 
         cod_val = goods_amount + shipping_fee_amount
 
@@ -1302,9 +1367,7 @@ class DeliveryShippingOrder(models.Model):
                     amount_paid += tx_amount
 
         effective_total_debt = max(0.0, order.amount_total - amount_paid)
-        remaining_debt = max(
-            0.0, effective_total_debt - existing_cod_sum_in_order_curr
-        )
+        remaining_debt = max(0.0, effective_total_debt - existing_cod_sum_in_order_curr)
         cod_val = min(cod_val, remaining_debt)
 
         if carrier_curr and order_curr and carrier_curr != order_curr:
@@ -1426,95 +1489,39 @@ class DeliveryShippingOrder(models.Model):
             raise UserError(_("Please select an 'oHUB Integration' delivery method."))
 
         res = carrier.execute_ohub_operation("create_shipment", record=self)
-        payload = res.get("payload") or {}
-        data = (
-            payload.get("data")
-            if isinstance(payload, dict)
-            and isinstance(payload.get("data"), (dict, list))
-            else payload
-        )
-        if isinstance(data, list) and data:
-            data = data[0]
-
-        order_code = None
-        if isinstance(data, dict):
-            order_code = (
-                data.get("order_code")
-                or data.get("tracking_code")
-                or data.get("tracking_number")
-                or data.get("order_number")
-                or data.get("shipment_id")
-                or data.get("code")
-            )
-        if not order_code and isinstance(payload, dict):
-            order_code = (
-                payload.get("order_code")
-                or payload.get("tracking_code")
-                or payload.get("tracking_number")
-                or payload.get("order_number")
-                or payload.get("shipment_id")
-            )
-
-        if not order_code:
-            err_msg = False
-            if isinstance(data, dict):
-                err_msg = (
-                    data.get("error_message") or data.get("message") or data.get("msg")
-                )
-            if not err_msg and isinstance(payload, dict):
-                err_msg = (
-                    payload.get("error_message")
-                    or payload.get("message")
-                    or payload.get("msg")
-                )
+        payload = res.get("payload") if isinstance(res, dict) else {}
+        if not isinstance(payload, dict):
             raise UserError(
-                err_msg or _("Carrier did not return a valid shipping order code.")
+                _("Carrier integration did not return a valid create_shipment response.")
             )
 
-        total_fee = 0.0
-        sort_code = ""
-        if isinstance(data, dict):
-            total_fee = float(
-                data.get("total_fee")
-                or data.get("fee")
-                or data.get("shipping_fee")
-                or data.get("total")
-                or (
-                    data.get("fee", {}) if isinstance(data.get("fee"), dict) else {}
-                ).get("main_service", 0.0)
-                or 0.0
-            )
-            sort_code = str(
-                data.get("sort_code")
-                or data.get("routing_code")
-                or data.get("hub_code")
-                or ""
-            )
-        elif isinstance(payload, dict):
-            total_fee = float(
-                payload.get("total_fee")
-                or payload.get("fee")
-                or payload.get("shipping_fee")
-                or payload.get("total")
-                or 0.0
-            )
-            sort_code = str(
-                payload.get("sort_code") or payload.get("routing_code") or ""
-            )
+        if payload.get("error_message"):
+            raise UserError(str(payload["error_message"]))
 
+        self._validate_contract_payload(
+            payload,
+            ["order_code", "tracking_number", "carrier_status", "total_fee"],
+            "create_shipment",
+        )
+
+        order_code = str(payload["order_code"])
+        tracking_number = str(payload["tracking_number"])
+        carrier_status = str(payload["carrier_status"])
+        total_fee = float(payload["total_fee"])
+        sort_code = str(payload.get("sort_code") or "")
 
         self.write(
             {
-                "order_code": str(order_code),
+                "order_code": order_code,
                 "sort_code": sort_code,
                 "estimated_fee": total_fee,
-                "carrier_status": "ready_to_pick",
-                "internal_state": "ready",
+                "carrier_status": carrier_status,
+                "internal_state": self._map_internal_state(carrier_status),
             }
         )
 
         if self.picking_id:
-            self.picking_id.carrier_tracking_ref = str(order_code)
+            self.picking_id.carrier_tracking_ref = tracking_number
 
         msg_parts = [
             _("Successfully created shipping order on carrier %(carrier)s.")

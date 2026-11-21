@@ -330,11 +330,11 @@ class TestDeliveryOHub(TransactionCase):
 
         fake_carrier_response = {
             "payload": {
-                "data": {
-                    "tracking_code": "GENERIC_TRACK_999",
-                    "shipping_fee": 45000,
-                    "routing_code": "HUB_SGN_01",
-                }
+                "order_code": "GENERIC_TRACK_999",
+                "tracking_number": "GENERIC_TRACK_999",
+                "carrier_status": "ready_to_pick",
+                "total_fee": 45000.0,
+                "sort_code": "HUB_SGN_01",
             }
         }
 
@@ -450,11 +450,11 @@ class TestDeliveryOHub(TransactionCase):
 
         fake_carrier_response = {
             "payload": {
-                "data": {
-                    "tracking_code": "FREESHIP_TRACK_01",
-                    "shipping_fee": 30000,
-                    "routing_code": "HUB_01",
-                }
+                "order_code": "FREESHIP_TRACK_01",
+                "tracking_number": "FREESHIP_TRACK_01",
+                "carrier_status": "ready_to_pick",
+                "total_fee": 30000.0,
+                "sort_code": "HUB_01",
             }
         }
         self.patch(type(carrier), "execute_ohub_operation", lambda *args, **kwargs: fake_carrier_response)
@@ -1174,7 +1174,8 @@ class TestDeliveryOHub(TransactionCase):
 
         rejection_response = {
             "payload": {
-                "code": 400,
+                "success": False,
+                "carrier_status": "ready_to_pick",
                 "message": "Shipper is currently at the warehouse, cancellation rejected.",
             }
         }
@@ -1194,7 +1195,8 @@ class TestDeliveryOHub(TransactionCase):
 
         acceptance_response = {
             "payload": {
-                "code": 200,
+                "success": True,
+                "carrier_status": "cancel",
                 "message": "Shipment cancellation accepted successfully.",
             }
         }
@@ -1266,7 +1268,7 @@ class TestDeliveryOHub(TransactionCase):
 
         rejection_response = {
             "payload": {
-                "code": 400,
+                "success": False,
                 "message": "Carrier cannot schedule redelivery after 3 attempts.",
             }
         }
@@ -1278,7 +1280,7 @@ class TestDeliveryOHub(TransactionCase):
 
         return_reject_response = {
             "payload": {
-                "code": 500,
+                "success": False,
                 "message": "Return request rejected due to carrier depot policy.",
             }
         }
@@ -1515,3 +1517,298 @@ class TestDeliveryOHub(TransactionCase):
         self.assertEqual(ward_action["domain"], [("oris_ward_id", "=", ward.id)])
         self.assertEqual(ward_action["context"]["default_oris_ward_id"], ward.id)
         self.assertEqual(ward_action["context"]["default_state_id"], state.id)
+
+    def test_resolve_carrier_address_prevents_cross_carrier_fallback(self):
+        state = self.env["res.country.state"].search([("country_id.code", "=", "VN")], limit=1)
+        ward = self.env["res.admin.unit"].create({
+            "name": "Phuong Cross Carrier Test",
+            "code": "TEST_CROSS_CARRIER_WARD",
+            "level": "3",
+            "state_id": state.id,
+        })
+        flow_ghn = self.env["hub.flow"].create({"name": "GHN Flow"})
+        flow_ahamove = self.env["hub.flow"].create({"name": "Ahamove Flow"})
+
+        carrier_ghn = self.env["delivery.carrier"].create({
+            "name": "GHN Carrier",
+            "delivery_type": "ohub",
+            "product_id": self.product_1.id,
+            "hub_flow_id": flow_ghn.id,
+        })
+        carrier_ahamove = self.env["delivery.carrier"].create({
+            "name": "Ahamove Carrier",
+            "delivery_type": "ohub",
+            "product_id": self.product_1.id,
+            "hub_flow_id": flow_ahamove.id,
+        })
+
+        ghn_mapping = self.env["delivery.address.mapping"].create({
+            "carrier_id": carrier_ghn.id,
+            "hub_flow_id": flow_ghn.id,
+            "state_id": state.id,
+            "oris_ward_id": ward.id,
+            "external_province_id": 201,
+            "external_district_id": 1442,
+            "external_district_name": "Quan 1",
+            "external_ward_code": "20101",
+            "external_ward_name": "Phuong Ben Nghe",
+            "state": "matched",
+        })
+
+        resolved_ghn = self.env["delivery.address.mapping"].resolve_carrier_address(
+            carrier_ghn, state=state, ward=ward
+        )
+        self.assertEqual(resolved_ghn.id, ghn_mapping.id)
+        self.assertEqual(resolved_ghn.external_district_name, "Quan 1")
+
+        with self.assertRaises(UserError) as cm:
+            self.env["delivery.address.mapping"].resolve_carrier_address(
+                carrier_ahamove, state=state, ward=ward
+            )
+        self.assertIn("has not been mapped", str(cm.exception))
+
+        ahamove_mapping = self.env["delivery.address.mapping"].create({
+            "carrier_id": carrier_ahamove.id,
+            "hub_flow_id": flow_ahamove.id,
+            "state_id": state.id,
+            "oris_ward_id": ward.id,
+            "external_district_name": "SGN",
+            "external_ward_code": "SGN_WARD_01",
+            "external_ward_name": "Ben Nghe Ahamove",
+            "state": "matched",
+        })
+        resolved_ahamove = self.env["delivery.address.mapping"].resolve_carrier_address(
+            carrier_ahamove, state=state, ward=ward
+        )
+        self.assertEqual(resolved_ahamove.id, ahamove_mapping.id)
+        self.assertEqual(resolved_ahamove.external_district_name, "SGN")
+
+    def test_ohub_fetch_available_services_excludes_invalid_and_normalizes_types(self):
+        carrier = self.env["delivery.carrier"].create({
+            "name": "Service Normalization Carrier",
+            "delivery_type": "ohub",
+            "product_id": self.product_1.id,
+        })
+        request = self.env["hub.request"].search([], limit=1)
+        if not request:
+            flow = self.env["hub.flow"].create({"name": "Test Flow", "code": "TEST_FLOW"})
+            request = self.env["hub.request"].create({
+                "flow_id": flow.id,
+                "name": "Test Request",
+                "code": "TEST_REQ",
+                "url": "https://api.example.com",
+            })
+        op = self.env["delivery.ohub.operation"].create({
+            "name": "Op Available Services",
+            "carrier_id": carrier.id,
+            "request_id": request.id,
+            "operation_type": "available_services",
+            "execution_mode": "sync",
+        })
+        wizard = self.env["choose.delivery.carrier"].create({
+            "carrier_id": carrier.id,
+            "payment_type_id": "1",
+        })
+
+        mock_payload_services = {
+            "services": [
+                {
+                    "service_id": 1,
+                    "service_code": "SGN-BIKE",
+                    "service_name": "Giao Hoa Toc",
+                    "service_type": "express",
+                    "total_fee": 30000.0,
+                    "service_fee": 30000.0,
+                },
+                {
+                    "service_id": 99,
+                    "service_code": "99",
+                    "service_name": "Tiet Kiem Eco",
+                    "service_type": "economy",
+                    "total_fee": 18000.0,
+                    "service_fee": 18000.0,
+                },
+            ]
+        }
+
+        self.patch(type(carrier), "execute_ohub_operation", lambda *args, **kwargs: {"payload": mock_payload_services})
+        quotes = carrier.ohub_fetch_available_services(wizard)
+
+        self.assertEqual(len(quotes), 2)
+        quote_express = quotes.filtered(lambda q: q.service_code == "SGN-BIKE")
+        self.assertTrue(quote_express)
+        self.assertEqual(quote_express.service_name, "Giao Hoa Toc")
+        self.assertEqual(quote_express.service_type, "express")
+
+        quote_eco = quotes.filtered(lambda q: q.service_code == "99")
+        self.assertTrue(quote_eco)
+        self.assertEqual(quote_eco.service_name, "Tiet Kiem Eco")
+        self.assertEqual(quote_eco.service_type, "economy")
+
+        mock_payload_missing_services = {
+            "invalid_key": []
+        }
+
+        self.patch(type(carrier), "execute_ohub_operation", lambda *args, **kwargs: {"payload": mock_payload_missing_services})
+        with self.assertRaises(UserError) as cm:
+            carrier.ohub_fetch_available_services(wizard)
+        self.assertIn("must contain a 'services' list", str(cm.exception))
+
+    def test_standard_contract_validation_error(self):
+        shipping_model = self.env["delivery.shipping.order"]
+        with self.assertRaises(UserError) as cm_not_dict:
+            shipping_model._validate_contract_payload(["invalid_list"], ["order_code"], "test_op")
+        self.assertIn("must be a JSON object", str(cm_not_dict.exception))
+
+        with self.assertRaises(UserError) as cm_missing:
+            shipping_model._validate_contract_payload({"fee": 1000}, ["order_code", "total_fee"], "test_op")
+        self.assertIn("missing required contract field(s)", str(cm_missing.exception))
+        self.assertIn("order_code", str(cm_missing.exception))
+
+    def test_rate_shipment_standard_contract(self):
+        carrier = self.env["delivery.carrier"].create({
+            "name": "Standard Rate Carrier",
+            "delivery_type": "ohub",
+            "product_id": self.product_1.id,
+        })
+        country_vn = self.env.ref("base.vn")
+        state_dn = self.env["res.country.state"].search([("country_id", "=", country_vn.id)], limit=1)
+        ward_hc = self.env["res.admin.unit"].create({
+            "name": "Hai Chau Standard Ward",
+            "code": "HC_STD_001",
+            "state_id": state_dn.id,
+        })
+        self.env["delivery.address.mapping"].create({
+            "carrier_id": carrier.id,
+            "state_id": state_dn.id,
+            "oris_ward_id": ward_hc.id,
+            "state": "matched",
+            "external_province_id": 201,
+            "external_district_name": "Hai Chau",
+            "external_ward_code": "001",
+        })
+        partner = self.env["res.partner"].create({
+            "name": "Standard Rate Customer",
+            "street": "100 Nguyen Van Linh",
+            "phone": "0911223344",
+            "country_id": country_vn.id,
+            "state_id": state_dn.id,
+            "ward_id": ward_hc.id,
+        })
+        order = self.env["sale.order"].create({
+            "partner_id": partner.id,
+            "partner_shipping_id": partner.id,
+            "carrier_id": carrier.id,
+            "order_line": [
+                (0, 0, {
+                    "product_id": self.product_1.id,
+                    "product_uom_qty": 1,
+                    "price_unit": 50.0,
+                }),
+            ],
+        })
+
+        mock_rate_payload = {
+            "total_fee": 25000.0,
+            "service_fee": 25000.0,
+            "insurance_fee": 0.0,
+            "cod_fee": 0.0,
+        }
+        self.patch(type(carrier), "execute_ohub_operation", lambda *args, **kwargs: {"payload": mock_rate_payload})
+        res = carrier.ohub_rate_shipment(order)
+        self.assertTrue(res["success"])
+        self.assertEqual(res["price"], 25000.0)
+
+    def test_sync_order_info_standard_contract(self):
+        carrier = self.env["delivery.carrier"].create({
+            "name": "Standard Sync Carrier",
+            "delivery_type": "ohub",
+            "product_id": self.product_1.id,
+        })
+        shipping_order = self.env["delivery.shipping.order"].create({
+            "name": "SHIP/SYNC/001",
+            "client_order_code": "CLI-SYNC-001",
+            "order_code": "TRACK-SYNC-001",
+            "carrier_id": carrier.id,
+            "internal_state": "ready",
+            "carrier_status": "ready_to_pick",
+        })
+
+        mock_info_payload = {
+            "order_code": "TRACK-SYNC-001",
+            "carrier_status": "delivering",
+            "internal_state": "in_transit",
+            "converted_weight": 550,
+            "current_warehouse": "Buu cuc Cau Giay",
+            "timeline": [
+                {
+                    "time": "2026-11-21 08:30:00",
+                    "status": "delivering",
+                    "description": "Dang giao hang",
+                    "station": "Buu cuc Cau Giay",
+                }
+            ],
+        }
+        self.patch(type(carrier), "execute_ohub_operation", lambda *args, **kwargs: {"payload": mock_info_payload})
+        shipping_order.action_sync_order_info()
+
+        self.assertEqual(shipping_order.carrier_status, "delivering")
+        self.assertEqual(shipping_order.internal_state, "in_transit")
+        self.assertEqual(shipping_order.converted_weight, 550)
+        logs = self.env["delivery.shipping.order.log"].search([("shipping_order_id", "=", shipping_order.id)])
+        self.assertTrue(logs)
+        self.assertEqual(logs[0].warehouse, "Buu cuc Cau Giay")
+
+    def test_print_label_standard_contract(self):
+        carrier = self.env["delivery.carrier"].create({
+            "name": "Standard Print Carrier",
+            "delivery_type": "ohub",
+            "product_id": self.product_1.id,
+        })
+        shipping_order = self.env["delivery.shipping.order"].create({
+            "name": "SHIP/PRINT/001",
+            "client_order_code": "CLI-PRINT-001",
+            "order_code": "TRACK-PRINT-001",
+            "carrier_id": carrier.id,
+            "internal_state": "ready",
+            "carrier_status": "ready_to_pick",
+        })
+
+        mock_print_payload = {
+            "url": "https://example.com/shipping_labels/track001.pdf",
+        }
+        self.patch(type(carrier), "execute_ohub_operation", lambda *args, **kwargs: {"payload": mock_print_payload})
+        action = shipping_order.action_print_label()
+        self.assertEqual(action.get("type"), "ir.actions.act_url")
+        self.assertEqual(action.get("url"), "https://example.com/shipping_labels/track001.pdf")
+
+    def test_process_carrier_webhook_standard_contract(self):
+        carrier = self.env["delivery.carrier"].create({
+            "name": "Standard Webhook Carrier",
+            "delivery_type": "ohub",
+            "product_id": self.product_1.id,
+        })
+        shipping_order = self.env["delivery.shipping.order"].create({
+            "name": "SHIP/WH/001",
+            "client_order_code": "CLI-WH-001",
+            "order_code": "TRACK-WH-001",
+            "carrier_id": carrier.id,
+            "internal_state": "ready",
+            "carrier_status": "ready_to_pick",
+        })
+
+        webhook_payload = {
+            "order_code": "TRACK-WH-001",
+            "status": "delivered",
+            "action_time": "2026-11-21T10:00:00",
+            "warehouse": "Kho Cau Giay 02",
+            "reason": "Giao thanh cong",
+            "converted_weight": 600,
+            "total_fee": 32000.0,
+        }
+        res = self.env["delivery.shipping.order"].process_carrier_webhook(webhook_payload)
+        self.assertEqual(res.get("code"), 200)
+        self.assertEqual(shipping_order.carrier_status, "delivered")
+        self.assertEqual(shipping_order.internal_state, "delivered")
+        self.assertEqual(shipping_order.converted_weight, 600)
+        self.assertEqual(shipping_order.actual_total_fee, 32000.0)
