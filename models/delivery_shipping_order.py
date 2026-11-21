@@ -2,8 +2,18 @@ import math
 from datetime import UTC
 
 from odoo.exceptions import UserError
+from odoo.tools.misc import format_amount
 
 from odoo import _, api, fields, models
+
+CANCELLABLE_CARRIER_STATUSES = {"draft", "ready_to_pick"}
+REDELIVERY_CARRIER_STATUSES = {"delivery_fail", "issue", "return_fail", "exception"}
+REDELIVERY_INTERNAL_STATES = {"issue", "delivery_fail"}
+RETURN_CARRIER_STATUSES = {"delivery_fail", "waiting_to_return", "issue", "exception"}
+RETURN_INTERNAL_STATES = {"issue", "delivery_fail"}
+EXCEPTION_CARRIER_STATUSES = {"delivery_fail", "waiting_to_return", "exception", "damage", "lost"}
+INACTIVE_CARRIER_STATUSES = {"cancel", "returned", "delivered"}
+INACTIVE_INTERNAL_STATES = {"cancelled", "returned", "delivered"}
 
 
 class DeliveryShippingOrder(models.Model):
@@ -58,7 +68,7 @@ class DeliveryShippingOrder(models.Model):
     to_ward_name = fields.Char(string="Ward / Commune Name")
     to_district_id = fields.Integer(string="District ID")
     to_district_name = fields.Char(string="District Name")
-    to_province_id = fields.Integer(string="Recipient Province ID")
+    to_province_id = fields.Char(string="Recipient Province ID")
     to_province_name = fields.Char(string="Recipient Province Name")
 
     from_name = fields.Char(string="Sender Name")
@@ -68,7 +78,7 @@ class DeliveryShippingOrder(models.Model):
     from_ward_name = fields.Char(string="Sender Ward / Commune Name")
     from_district_id = fields.Integer(string="Sender District ID")
     from_district_name = fields.Char(string="Sender District Name")
-    from_province_id = fields.Integer(string="Sender Province ID")
+    from_province_id = fields.Char(string="Sender Province ID")
     from_province_name = fields.Char(string="Sender Province Name")
 
     weight = fields.Integer(string="Weight (g)", default=0)
@@ -316,6 +326,10 @@ class DeliveryShippingOrder(models.Model):
         self.write(vals)
 
         log_model = self.env["delivery.shipping.order.log"].sudo()
+        existing_uids = set(
+            log_model.search([("shipping_order_id", "=", self.id)]).mapped("event_uid")
+        )
+        new_logs = []
         for entry in timeline:
             if not isinstance(entry, dict):
                 raise UserError(
@@ -331,14 +345,9 @@ class DeliveryShippingOrder(models.Model):
             entry_desc = str(entry["description"])
             entry_station = str(entry["station"])
             event_uid = f"{self.id}_{entry_status}_{entry_time}_sync"
-            if not log_model.search(
-                [
-                    ("shipping_order_id", "=", self.id),
-                    ("event_uid", "=", event_uid),
-                ],
-                limit=1,
-            ):
-                log_model.create(
+            if event_uid not in existing_uids:
+                existing_uids.add(event_uid)
+                new_logs.append(
                     {
                         "shipping_order_id": self.id,
                         "carrier_status": entry_status,
@@ -350,6 +359,8 @@ class DeliveryShippingOrder(models.Model):
                         "source": "manual",
                     }
                 )
+        if new_logs:
+            log_model.create(new_logs)
 
         self.message_post(
             body=_("Updated latest information from carrier. Status: %s")
@@ -401,7 +412,7 @@ class DeliveryShippingOrder(models.Model):
             return True
 
         carrier_status = self.carrier_status or "draft"
-        if carrier_status not in ["ready_to_pick", "draft"]:
+        if carrier_status not in CANCELLABLE_CARRIER_STATUSES:
             raise UserError(
                 _(
                     "A shipping order can only be cancelled while in 'Ready to Pick' or 'Draft' status."
@@ -440,12 +451,10 @@ class DeliveryShippingOrder(models.Model):
 
     def action_delivery_again(self):
         self.ensure_one()
-        if self.carrier_status not in [
-            "delivery_fail",
-            "issue",
-            "return_fail",
-            "exception",
-        ] and self.internal_state not in ["issue", "delivery_fail"]:
+        if (
+            self.carrier_status not in REDELIVERY_CARRIER_STATUSES
+            and self.internal_state not in REDELIVERY_INTERNAL_STATES
+        ):
             raise UserError(
                 _(
                     "Redelivery can only be requested when the shipping order is in delivery failure or issue status."
@@ -465,12 +474,10 @@ class DeliveryShippingOrder(models.Model):
 
     def action_request_return(self):
         self.ensure_one()
-        if self.carrier_status not in [
-            "delivery_fail",
-            "waiting_to_return",
-            "issue",
-            "exception",
-        ] and self.internal_state not in ["issue", "delivery_fail"]:
+        if (
+            self.carrier_status not in RETURN_CARRIER_STATUSES
+            and self.internal_state not in RETURN_INTERNAL_STATES
+        ):
             raise UserError(
                 _(
                     "Return can only be requested when delivery has failed or the shipment has an issue."
@@ -516,19 +523,49 @@ class DeliveryShippingOrder(models.Model):
         if payload.get("error_message"):
             raise UserError(str(payload["error_message"]))
 
-        self._validate_contract_payload(payload, ["url"], "print_label")
-        print_url = str(payload["url"])
-        if not (print_url.startswith("http://") or print_url.startswith("https://")):
-            raise UserError(
-                _("Carrier integration returned an invalid printable label URL: %s")
-                % print_url
+        content_type = payload.get("content_type", "url")
+        if content_type == "url":
+            self._validate_contract_payload(
+                payload,
+                ["url"] if "url" in payload else ["content"],
+                "print_label",
             )
-
-        return {
-            "type": "ir.actions.act_url",
-            "url": print_url,
-            "target": "new",
-        }
+            print_url = str(payload.get("url") or payload.get("content") or "")
+            if not (print_url.startswith("http://") or print_url.startswith("https://")):
+                raise UserError(
+                    _("Carrier integration returned an invalid printable label URL: %s")
+                    % print_url
+                )
+            return {
+                "type": "ir.actions.act_url",
+                "url": print_url,
+                "target": "new",
+            }
+        elif content_type == "pdf_base64":
+            self._validate_contract_payload(
+                payload,
+                ["content"] if "content" in payload else ["file_content"],
+                "print_label",
+            )
+            content = payload.get("content") or payload.get("file_content")
+            attachment = self.env["ir.attachment"].create({
+                "name": f"Shipping_Label_{self.order_code or self.name}.pdf",
+                "type": "binary",
+                "datas": content,
+                "res_model": self._name,
+                "res_id": self.id,
+                "mimetype": "application/pdf",
+            })
+            return {
+                "type": "ir.actions.act_url",
+                "url": f"/web/content/{attachment.id}?download=true",
+                "target": "new",
+            }
+        else:
+            raise UserError(
+                _("Unsupported label content type '%(type)s' returned by carrier integration.")
+                % {"type": content_type}
+            )
 
     def apply_carrier_status_update(
         self,
@@ -647,13 +684,7 @@ class DeliveryShippingOrder(models.Model):
                     }
                 )
 
-                if status in [
-                    "delivery_fail",
-                    "waiting_to_return",
-                    "exception",
-                    "damage",
-                    "lost",
-                ]:
+                if status in EXCEPTION_CARRIER_STATUSES:
                     self.sale_order_id.activity_schedule(
                         "mail.mail_activity_data_todo",
                         summary=_("Shipping order issue: %s") % status,
@@ -698,7 +729,7 @@ class DeliveryShippingOrder(models.Model):
             reason=reason,
             converted_weight=converted_weight,
             source="webhook",
-            raw_payload=str(payload),
+            raw_payload=payload,
         )
 
     @api.model
@@ -723,7 +754,7 @@ class DeliveryShippingOrder(models.Model):
 
         dist_id = 0
         ward_code = ""
-        prov_id = 0
+        prov_id = ""
         prov_name = state.name if state else ""
         dist_name = ""
         ward_name = ward.name if ward else ""
@@ -741,7 +772,7 @@ class DeliveryShippingOrder(models.Model):
                     raise UserError(_("No mapping found."))
                 dist_id = mapping.external_district_id
                 ward_code = mapping.external_ward_code
-                prov_id = mapping.external_province_id
+                prov_id = str(mapping.external_province_id or "")
                 if mapping.external_province_name:
                     prov_name = mapping.external_province_name
                 if mapping.external_district_name:
@@ -994,8 +1025,8 @@ class DeliveryShippingOrder(models.Model):
             and sale_order.shipping_order_ids.filtered(
                 lambda s: (
                     s.picking_id != picking
-                    and s.internal_state not in ["cancelled"]
-                    and s.carrier_status not in ["cancel"]
+                    and s.internal_state not in INACTIVE_INTERNAL_STATES
+                    and s.carrier_status not in INACTIVE_CARRIER_STATUSES
                 )
             )
         )
@@ -1071,8 +1102,8 @@ class DeliveryShippingOrder(models.Model):
             prior_active_ships = sale_order.shipping_order_ids.filtered(
                 lambda s: (
                     s.picking_id != picking
-                    and s.internal_state not in ["cancelled"]
-                    and s.carrier_status not in ["cancel"]
+                    and s.internal_state not in INACTIVE_INTERNAL_STATES
+                    and s.carrier_status not in INACTIVE_CARRIER_STATUSES
                 )
             )
 
@@ -1318,8 +1349,8 @@ class DeliveryShippingOrder(models.Model):
         goods_amount = total_items_price
         prior_active_ships = order.shipping_order_ids.filtered(
             lambda s: (
-                s.internal_state not in ["cancelled"]
-                and s.carrier_status not in ["cancel"]
+                s.internal_state not in INACTIVE_INTERNAL_STATES
+                and s.carrier_status not in INACTIVE_CARRIER_STATUSES
             )
         )
 
@@ -1529,13 +1560,8 @@ class DeliveryShippingOrder(models.Model):
             _("Tracking Code: <b>%(code)s</b>") % {"code": order_code},
         ]
         if self.cod_amount:
-            msg_parts.append(
-                _("COD Amount: <b>%(cod)s %(curr)s</b>")
-                % {
-                    "cod": f"{self.cod_amount:,.0f}",
-                    "curr": self.currency_id.name or "",
-                }
-            )
+            formatted_cod = format_amount(self.env, self.cod_amount, self.currency_id)
+            msg_parts.append(_("COD Amount: <b>%(cod)s</b>") % {"cod": formatted_cod})
         if self.expected_delivery_time:
             msg_parts.append(
                 _("Expected Delivery: %(date)s")

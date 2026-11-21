@@ -1,113 +1,136 @@
-from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+
+from odoo import _, api, fields, models
 
 
 class DeliveryAddressMapping(models.Model):
-    _name = 'delivery.address.mapping'
-    _description = 'ORIS - Carrier Address Mapping'
-    _order = 'state_id, oris_ward_id, id desc'
+    _name = "delivery.address.mapping"
+    _description = "ORIS - Carrier Address Mapping"
+    _order = "state_id, oris_ward_id, id desc"
 
-    name = fields.Char(string='Mapping Description', compute='_compute_name', store=True)
+    name = fields.Char(
+        string="Mapping Description", compute="_compute_name", store=True
+    )
     carrier_id = fields.Many2one(
-        comodel_name='delivery.carrier',
-        string='Delivery Method',
+        comodel_name="delivery.carrier",
+        string="Delivery Method",
         index=True,
-        ondelete='cascade',
+        ondelete="cascade",
     )
     hub_flow_id = fields.Many2one(
-        comodel_name='hub.flow',
-        string='oHUB Integration Flow',
+        comodel_name="hub.flow",
+        string="oHUB Integration Flow",
         index=True,
-        ondelete='cascade',
+        ondelete="cascade",
     )
     state_id = fields.Many2one(
-        comodel_name='res.country.state',
-        string='State / Province',
+        comodel_name="res.country.state",
+        string="State / Province",
         domain="[('country_id.code', '=', 'VN')]",
         index=True,
         required=True,
-        ondelete='cascade',
+        ondelete="cascade",
     )
     oris_ward_id = fields.Many2one(
-        comodel_name='res.admin.unit',
-        string='Ward / Commune',
+        comodel_name="res.admin.unit",
+        string="Ward / Commune",
         domain="[('state_id', '=?', state_id)]",
         index=True,
         required=True,
-        ondelete='cascade',
+        ondelete="cascade",
     )
-    external_province_id = fields.Integer(string='Carrier Province ID')
-    external_province_name = fields.Char(string='Carrier Province Name')
-    external_district_id = fields.Integer(string='Carrier District ID')
-    external_district_name = fields.Char(string='Carrier District Name')
-    external_ward_code = fields.Char(string='Carrier Ward Code', required=True)
-    external_ward_name = fields.Char(string='Carrier Ward Name')
+    external_province_id = fields.Char(string="Carrier Province ID")
+    external_province_name = fields.Char(string="Carrier Province Name")
+    external_district_id = fields.Integer(string="Carrier District ID")
+    external_district_name = fields.Char(string="Carrier District Name")
+    external_ward_code = fields.Char(string="Carrier Ward Code", required=True)
+    external_ward_name = fields.Char(string="Carrier Ward Name")
     state = fields.Selection(
         selection=[
-            ('matched', 'Matched'),
-            ('unmatched', 'Unmatched'),
+            ("matched", "Matched"),
+            ("unmatched", "Unmatched"),
         ],
-        string='Status',
-        default='matched',
+        string="Status",
+        default="matched",
         required=True,
         index=True,
     )
     match_method = fields.Selection(
         selection=[
-            ('auto', 'Automatic'),
-            ('manual', 'Manual'),
+            ("auto", "Automatic"),
+            ("manual", "Manual"),
         ],
-        string='Matching Method',
-        default='manual',
+        string="Matching Method",
+        default="manual",
         required=True,
     )
     is_default = fields.Boolean(
-        string='Default on Duplicate Route',
+        string="Default on Duplicate Route",
         default=True,
-        help='Prioritize using this mapping if a ward corresponds to multiple carrier codes.',
+        help="Prioritize using this mapping if a ward corresponds to multiple carrier codes.",
     )
-    active = fields.Boolean(string='Active', default=True)
+    active = fields.Boolean(string="Active", default=True)
 
-    @api.depends('oris_ward_id.name', 'state_id.name', 'external_ward_name', 'external_ward_code')
+    @api.depends(
+        "oris_ward_id.name", "state_id.name", "external_ward_name", "external_ward_code"
+    )
     def _compute_name(self):
         for rec in self:
-            oris_label = f"{rec.oris_ward_id.name or ''}, {rec.state_id.name or ''}".strip(', ')
+            oris_label = (
+                f"{rec.oris_ward_id.name or ''}, {rec.state_id.name or ''}".strip(", ")
+            )
             external_label = f"{rec.external_ward_name or ''} [{rec.external_ward_code or ''}]".strip()
-            rec.name = f"{oris_label} -> {external_label}" if (oris_label or external_label) else _('New Mapping')
+            rec.name = (
+                f"{oris_label} -> {external_label}"
+                if (oris_label or external_label)
+                else _("New Mapping")
+            )
 
     @api.model
     def resolve_carrier_address(self, carrier, state=None, ward=None):
         if not state or not ward:
-            raise UserError(_("Missing State/Province or Ward/Commune to resolve shipping address."))
+            raise UserError(
+                _("Missing State/Province or Ward/Commune to resolve shipping address.")
+            )
+
+        if not carrier or (not carrier.id and not carrier.hub_flow_id):
+            raise UserError(
+                _(
+                    "Delivery method '%(carrier)s' has no carrier ID or oHUB flow configured."
+                )
+                % {"carrier": carrier.name if carrier else ""}
+            )
 
         domain = [
-            ('state_id', '=', state.id),
-            ('oris_ward_id', '=', ward.id),
-            ('active', '=', True),
-            ('state', '=', 'matched'),
+            ("state_id", "=", state.id),
+            ("oris_ward_id", "=", ward.id),
+            ("active", "=", True),
+            ("state", "=", "matched"),
         ]
         carrier_domain = list(domain)
         if carrier.hub_flow_id and carrier.id:
             carrier_domain += [
-                '|',
-                ('carrier_id', '=', carrier.id),
-                '&',
-                ('carrier_id', '=', False),
-                ('hub_flow_id', '=', carrier.hub_flow_id.id),
+                "|",
+                ("carrier_id", "=", carrier.id),
+                "&",
+                ("carrier_id", "=", False),
+                ("hub_flow_id", "=", carrier.hub_flow_id.id),
             ]
         elif carrier.hub_flow_id:
-            carrier_domain += [('hub_flow_id', '=', carrier.hub_flow_id.id)]
+            carrier_domain += [("hub_flow_id", "=", carrier.hub_flow_id.id)]
         elif carrier.id:
-            carrier_domain += [('carrier_id', '=', carrier.id)]
+            carrier_domain += [("carrier_id", "=", carrier.id)]
 
-        mapping = self.search(carrier_domain, order='is_default desc, id desc', limit=1)
+        mapping = self.search(carrier_domain, order="is_default desc, id desc", limit=1)
         if not mapping:
             raise UserError(
-                _("The address '%(ward)s, %(state)s' has not been mapped for delivery method '%(carrier)s'.")
+                _(
+                    "The address '%(ward)s, %(state)s' has not been mapped for delivery method '%(carrier)s'."
+                )
                 % {
-                    'ward': ward.name,
-                    'state': state.name,
-                    'carrier': carrier.name,
+                    "ward": ward.name,
+                    "state": state.name,
+                    "carrier": carrier.name,
                 }
             )
         return mapping

@@ -1,5 +1,6 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from .delivery_shipping_order import INACTIVE_CARRIER_STATUSES, INACTIVE_INTERNAL_STATES
 
 
 class StockPicking(models.Model):
@@ -74,11 +75,9 @@ class StockPicking(models.Model):
 
     def _get_active_shipping_order(self):
         self.ensure_one()
-        inactive_internal = {"cancelled", "returned", "delivered"}
-        inactive_carrier = {"cancel", "returned", "delivered"}
         return self.shipping_order_ids.filtered(
-            lambda s: s.internal_state not in inactive_internal
-            and s.carrier_status not in inactive_carrier
+            lambda s: s.internal_state not in INACTIVE_INTERNAL_STATES
+            and s.carrier_status not in INACTIVE_CARRIER_STATUSES
         )[:1]
 
     @api.depends("shipping_order_ids")
@@ -102,8 +101,8 @@ class StockPicking(models.Model):
                     sale.shipping_order_ids.filtered(
                         lambda s: (
                             s.picking_id != picking
-                            and s.internal_state not in ["cancelled"]
-                            and s.carrier_status not in ["cancel"]
+                            and s.internal_state not in INACTIVE_INTERNAL_STATES
+                            and s.carrier_status not in INACTIVE_CARRIER_STATUSES
                         )
                     )
                 )
@@ -133,8 +132,8 @@ class StockPicking(models.Model):
                 self.sale_id.shipping_order_ids.filtered(
                     lambda s: (
                         s.picking_id != target_picking
-                        and s.internal_state not in ["cancelled"]
-                        and s.carrier_status not in ["cancel"]
+                        and s.internal_state not in INACTIVE_INTERNAL_STATES
+                        and s.carrier_status not in INACTIVE_CARRIER_STATUSES
                     )
                 )
             )
