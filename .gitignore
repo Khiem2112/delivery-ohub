@@ -21,7 +21,7 @@ tasks/
 docs/
 notes/
 scratch/
-
+tests/
 # Cau hinh moi truong phat trien va trinh soan thao
 .vscode/
 .idea/
