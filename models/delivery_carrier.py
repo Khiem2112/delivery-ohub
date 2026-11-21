@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from .delivery_shipping_order import CANCELLABLE_CARRIER_STATUSES
 
 
 class DeliveryCarrier(models.Model):
@@ -65,6 +66,12 @@ class DeliveryCarrier(models.Model):
     )
 
     @api.depends('product_id', 'company_id')
+    @api.model
+    def _validate_contract_payload(self, payload, required_fields, operation_name):
+        return self.env["delivery.shipping.order"]._validate_contract_payload(
+            payload, required_fields, operation_name
+        )
+
     def _compute_carrier_currency_id(self):
         for carrier in self:
             if not carrier.currency_id:
@@ -158,7 +165,7 @@ class DeliveryCarrier(models.Model):
                 'warning_message': False,
             }
 
-        self.env["delivery.shipping.order"]._validate_contract_payload(
+        self._validate_contract_payload(
             fee_data, ["total_fee", "service_fee"], "rate_shipment"
         )
         total_fee = float(fee_data["total_fee"])
@@ -245,38 +252,7 @@ class DeliveryCarrier(models.Model):
         if not shipping_order:
             return True
 
-        carrier_status = shipping_order.carrier_status or "draft"
-        if carrier_status not in ["ready_to_pick", "draft"]:
-            raise UserError(
-                _("A shipping order can only be cancelled while in 'Ready to Pick' or 'Draft' status.")
-            )
-
-        if not shipping_order.order_code:
-            shipping_order.write({
-                "internal_state": "cancelled",
-            })
-            shipping_order.message_post(body=_("Draft shipping order cancelled."))
-            return True
-
-        res = self.execute_ohub_operation("cancel_shipment", record=shipping_order)
-        payload = res.get("payload") if isinstance(res, dict) else res
-        if not isinstance(payload, dict):
-            raise UserError(_("Carrier integration did not return a valid cancellation response."))
-
-        self.env["delivery.shipping.order"]._validate_contract_payload(
-            payload, ["success", "carrier_status"], "cancel_shipment"
-        )
-        is_success = bool(payload["success"])
-        carrier_status = str(payload["carrier_status"])
-        if not is_success:
-            err_msg = payload.get("message") or _("Carrier rejected the cancellation request.")
-            raise UserError(err_msg)
-
-        shipping_order.write({
-            "carrier_status": carrier_status,
-            "internal_state": "cancelled",
-        })
-        shipping_order.message_post(body=_("Successfully sent cancellation request to carrier."))
+        shipping_order.action_cancel_order()
         picking.message_post(
             body=_("Shipping order %(order)s was cancelled successfully.")
             % {"order": shipping_order.order_code or shipping_order.name}
@@ -348,12 +324,12 @@ class DeliveryCarrier(models.Model):
             res_services = self.execute_ohub_operation(
                 "available_services", record=shipping_order
             )
-            payload = res_services.get("payload") if isinstance(res_services, dict) else {}
-            if not isinstance(payload, dict) or "services" not in payload or not isinstance(payload["services"], list):
+            payload = res_services.get("payload") if isinstance(res_services, dict) else None
+            if not isinstance(payload, list):
                 raise UserError(
-                    _("Contract violation in 'available_services': response payload must contain a 'services' list.")
+                    _("Contract violation in 'available_services': response payload must be a list.")
                 )
-            services_data = payload["services"]
+            services_data = payload
 
         if not op_available:
             raise UserError(
@@ -385,7 +361,7 @@ class DeliveryCarrier(models.Model):
             for svc in services_data:
                 if not isinstance(svc, dict):
                     continue
-                self.env["delivery.shipping.order"]._validate_contract_payload(
+                self._validate_contract_payload(
                     svc,
                     [
                         "service_id",
@@ -409,8 +385,21 @@ class DeliveryCarrier(models.Model):
                         % {"type": service_type}
                     )
 
-                raw_total = float(svc["total_fee"])
-                raw_service = float(svc["service_fee"])
+                try:
+                    raw_total = float(svc["total_fee"])
+                    raw_service = float(svc["service_fee"])
+                except (ValueError, TypeError):
+                    raise UserError(
+                        _(
+                            "Contract violation in 'available_services': 'total_fee' and 'service_fee' must be valid numeric values."
+                        )
+                    )
+                if raw_total < 0 or raw_service < 0:
+                    raise UserError(
+                        _(
+                            "Contract violation in 'available_services': fee amounts cannot be negative."
+                        )
+                    )
                 raw_insurance = float(svc.get("insurance_fee") or 0.0)
                 raw_cod = float(svc.get("cod_fee") or 0.0)
 
@@ -532,7 +521,7 @@ class DeliveryCarrier(models.Model):
 
         error_msg = str(fee_data["error_message"]) if fee_data.get("error_message") else False
         if not error_msg:
-            self.env["delivery.shipping.order"]._validate_contract_payload(
+            self._validate_contract_payload(
                 fee_data, ["total_fee", "service_fee"], "rate_shipment"
             )
             total_fee = float(fee_data["total_fee"])
@@ -566,11 +555,6 @@ class DeliveryCarrier(models.Model):
             insurance_fee = self._convert_currency(raw_insurance_fee, carrier_currency, target_currency, company, date_rate)
             cod_fee = self._convert_currency(raw_cod_fee, carrier_currency, target_currency, company, date_rate)
 
-        if wizard:
-            for sibling in wizard.fee_quote_ids:
-                if sibling != quote:
-                    sibling.is_selected = False
-
         quote_vals = {
             "service_fee": service_fee,
             "insurance_fee": insurance_fee,
@@ -582,15 +566,6 @@ class DeliveryCarrier(models.Model):
             "is_outdated": False,
         }
         quote.write(quote_vals)
-
-        if wizard:
-            if error_msg:
-                wizard.delivery_message = error_msg
-                wizard.display_price = 0.0
-                wizard.delivery_price = 0.0
-            else:
-                wizard.delivery_message = False
-
         return quote
 
     def resolve_carrier_address(self, state=None, ward=None):

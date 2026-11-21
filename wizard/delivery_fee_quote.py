@@ -126,6 +126,8 @@ class DeliveryFeeQuote(models.TransientModel):
         if carrier:
             carrier.ohub_calculate_quote_fee(self)
         if self.wizard_id:
+            for sibling in self.wizard_id.fee_quote_ids:
+                sibling.is_selected = (sibling.id == self.id)
             self.wizard_id._set_quote_price(self)
             return {
                 "type": "ir.actions.act_window",
