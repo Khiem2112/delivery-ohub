@@ -22,6 +22,7 @@ docs/
 notes/
 scratch/
 tests/
+scripts/
 # Cau hinh moi truong phat trien va trinh soan thao
 .vscode/
 .idea/
