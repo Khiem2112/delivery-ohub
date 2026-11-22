@@ -1176,7 +1176,7 @@ class DeliveryShippingOrder(models.Model):
                         date_rate,
                     )
                 )
-                goods_amount_res = round(
+                goods_amount_res = carrier_curr.round(
                     order_curr._convert(
                         goods_amount,
                         carrier_curr,
@@ -1184,7 +1184,7 @@ class DeliveryShippingOrder(models.Model):
                         date_rate,
                     )
                 )
-                shipping_fee_res = round(
+                shipping_fee_res = carrier_curr.round(
                     order_curr._convert(
                         shipping_fee_amount,
                         carrier_curr,
@@ -1195,13 +1195,13 @@ class DeliveryShippingOrder(models.Model):
             else:
                 cod_amount = round(cod_val)
                 insurance_value = round(goods_amount)
-                goods_amount_res = round(goods_amount)
-                shipping_fee_res = round(shipping_fee_amount)
+                goods_amount_res = goods_amount
+                shipping_fee_res = shipping_fee_amount
         elif not is_return:
             goods_amount = total_items_price
             shipping_fee_amount = 0.0
             if carrier_curr and order_curr and carrier_curr != order_curr:
-                goods_amount_res = round(
+                goods_amount_res = carrier_curr.round(
                     order_curr._convert(
                         goods_amount,
                         carrier_curr,
@@ -1210,11 +1210,18 @@ class DeliveryShippingOrder(models.Model):
                     )
                 )
                 shipping_fee_res = 0.0
-                insurance_value = goods_amount_res
+                insurance_value = round(
+                    order_curr._convert(
+                        goods_amount,
+                        carrier_curr,
+                        company,
+                        date_rate,
+                    )
+                )
             else:
-                goods_amount_res = round(goods_amount)
+                goods_amount_res = goods_amount
                 shipping_fee_res = 0.0
-                insurance_value = goods_amount_res
+                insurance_value = round(goods_amount)
 
         required_note = (
             getattr(picking, "required_note", False)
@@ -1418,7 +1425,7 @@ class DeliveryShippingOrder(models.Model):
                     date_rate,
                 )
             )
-            goods_amount_res = round(
+            goods_amount_res = carrier_curr.round(
                 order_curr._convert(
                     goods_amount,
                     carrier_curr,
@@ -1426,7 +1433,7 @@ class DeliveryShippingOrder(models.Model):
                     date_rate,
                 )
             )
-            shipping_fee_res = round(
+            shipping_fee_res = carrier_curr.round(
                 order_curr._convert(
                     shipping_fee_amount,
                     carrier_curr,
@@ -1437,8 +1444,8 @@ class DeliveryShippingOrder(models.Model):
         else:
             cod_amount = round(cod_val)
             insurance_value = round(goods_amount)
-            goods_amount_res = round(goods_amount)
-            shipping_fee_res = round(shipping_fee_amount)
+            goods_amount_res = goods_amount
+            shipping_fee_res = shipping_fee_amount
 
         existing_count = len(order.shipping_order_ids)
         client_code = f"{order.name}-{existing_count + 1:02d}"

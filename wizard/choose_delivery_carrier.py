@@ -563,8 +563,12 @@ class ChooseDeliveryCarrier(models.TransientModel):
                 picking_goods = prep_data.get("goods_amount", 0.0)
                 picking_shipping = prep_data.get("shipping_fee_amount", 0.0)
                 if carrier_curr and picking_curr and carrier_curr != picking_curr:
-                    picking_goods = round(carrier_curr._convert(picking_goods, picking_curr, company, date_rate))
-                    picking_shipping = round(carrier_curr._convert(picking_shipping, picking_curr, company, date_rate))
+                    picking_goods = picking_curr.round(
+                        carrier_curr._convert(picking_goods, picking_curr, company, date_rate)
+                    )
+                    picking_shipping = picking_curr.round(
+                        carrier_curr._convert(picking_shipping, picking_curr, company, date_rate)
+                    )
 
                 self.picking_id.write({
                     "goods_amount": picking_goods,
